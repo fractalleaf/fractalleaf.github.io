@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"><channel><title>The Data Cave - Søren</title><link>/</link><description></description><lastBuildDate>Wed, 08 Aug 2018 11:03:00 +0200</lastBuildDate><item><title>Exact cover and Donald Knuth’s DLX algorithm</title><link>/dlx.html</link><description>&lt;figure align="middle"&gt;
+  &lt;img src="/Algorithms/images/dlx_scott_pentomino.svg" title="pentomino solution"&gt;
+  &lt;figcaption&gt;A solution to &amp;#8220;Scott&amp;#8217;s pentomino problem&amp;#8221;. A 8x8 grid with a 2x2 hole in centre, with each pentomino being used once.&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;Given a collection of sets, &lt;span class="math"&gt;\(\mathcal{S}\)&lt;/span&gt;, where each set, &lt;span class="math"&gt;\(\mathcal{S}^\star\)&lt;/span&gt; in &lt;span class="math"&gt;\(\mathcal{S}\)&lt;/span&gt; is a subset of a larger set &lt;span class="math"&gt;\(\mathcal{X}\)&lt;/span&gt;. An &lt;a href="https://en.wikipedia.org/wiki/Exact_cover"&gt;exact …&lt;/a&gt;&lt;/p&gt;&lt;script type='text/javascript'&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width &lt; 768) ? "left" : align;
+        indent = (screen.width &lt; 768) ? "0em" : indent;
+        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+&lt;/script&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Søren</dc:creator><pubDate>Sun, 08 Jul 2018 10:15:00 +0200</pubDate><guid isPermaLink="false">tag:None,2018-07-08:/dlx.html</guid><category>exact cover</category><category>python</category><category>donald knuth</category><category>dlx</category></item><item><title>Project Euler problem 1 - Multiples of 3 and 5</title><link>/project-euler-problem-1.html</link><description>&lt;h2&gt;Description&lt;/h2&gt;
+&lt;p&gt;If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is&amp;nbsp;23.&lt;/p&gt;
+&lt;p&gt;Find the sum of all the multiples of 3 or 5 below&amp;nbsp;1000.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://projecteuler.net/problem=1"&gt;Link to&amp;nbsp;problem&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;Brute force&amp;nbsp;solution …&lt;/h2&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Søren</dc:creator><pubDate>Tue, 03 Jul 2018 00:00:00 +0200</pubDate><guid isPermaLink="false">tag:None,2018-07-03:/project-euler-problem-1.html</guid><category>project euler</category><category>python</category></item></channel></rss>

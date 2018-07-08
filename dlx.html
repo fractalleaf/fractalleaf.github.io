@@ -1,0 +1,515 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="" />
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="/theme/stylesheet/style.min.css">
+
+  <link rel="stylesheet" type="text/css" href="/theme/pygments/native.min.css">
+  <link rel="stylesheet" type="text/css" href="/theme/font-awesome/css/font-awesome.min.css">
+
+
+    <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Data Cave Atom">
+
+
+
+
+
+<meta name="author" content="Søren" />
+<meta name="description" content="A solution to “Scott’s pentomino problem”. A 8x8 grid with a 2x2 hole in centre, with each pentomino being used once. Introduction Given a collection of sets, \(\mathcal{S}\), where each set, \(\mathcal{S}^\star\) in \(\mathcal{S}\) is a subset of a larger set \(\mathcal{X}\). An exact …if (!document.getElementById(&#39;mathjaxscript_pelican_#%@#$@#&#39;)) { var align = &#34;center&#34;, indent = &#34;0em&#34;, linebreak = &#34;false&#34;; if (false) { align = (screen.width" />
+<meta name="keywords" content="exact cover, python, donald knuth, dlx">
+
+<meta property="og:site_name" content="The Data Cave"/>
+<meta property="og:title" content="Exact cover and Donald Knuth’s DLX algorithm"/>
+<meta property="og:description" content="A solution to “Scott’s pentomino problem”. A 8x8 grid with a 2x2 hole in centre, with each pentomino being used once. Introduction Given a collection of sets, \(\mathcal{S}\), where each set, \(\mathcal{S}^\star\) in \(\mathcal{S}\) is a subset of a larger set \(\mathcal{X}\). An exact …if (!document.getElementById(&#39;mathjaxscript_pelican_#%@#$@#&#39;)) { var align = &#34;center&#34;, indent = &#34;0em&#34;, linebreak = &#34;false&#34;; if (false) { align = (screen.width"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="/dlx.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2018-07-08 10:15:00+02:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="/author/soren.html">
+<meta property="article:section" content="Algorithms"/>
+<meta property="article:tag" content="exact cover"/>
+<meta property="article:tag" content="python"/>
+<meta property="article:tag" content="donald knuth"/>
+<meta property="article:tag" content="dlx"/>
+<meta property="og:image" content="">
+
+  <title>The Data Cave &ndash; Exact cover and Donald Knuth’s DLX algorithm</title>
+
+</head>
+<body>
+  <aside>
+    <div>
+      <a href="">
+        <img src="/theme/img/profile.png" alt="" title="">
+      </a>
+      <h1><a href=""></a></h1>
+
+
+      <nav>
+        <ul class="list">
+
+          <li><a href="http://alexandrevicenzi.com" target="_blank">Portfolio</a></li>
+        </ul>
+      </nav>
+
+      <ul class="social">
+        <li><a class="sc-linkedin" href="https://www.linkedin.com/in/sfrimann/" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+        <li><a class="sc-github" href="https://github.com/fractalleaf" target="_blank"><i class="fa fa-github"></i></a></li>
+      </ul>
+    </div>
+
+
+  </aside>
+  <main>
+
+    <nav>
+      <a href="">    Home
+</a>
+
+      <a href="/archives.html">Archives</a>
+      <a href="/categories.html">Categories</a>
+      <a href="/tags.html">Tags</a>
+
+      <a href="/feeds/all.atom.xml">    Atom
+</a>
+
+    </nav>
+
+<article class="single">
+  <header>
+      
+    <h1 id="dlx">Exact cover and Donald Knuth&#8217;s <span class="caps">DLX</span>&nbsp;algorithm</h1>
+    <p>
+          Posted on Sun 08 July 2018 in <a href="/category/algorithms.html">Algorithms</a>
+
+
+    </p>
+  </header>
+
+
+  <div>
+    <figure align="middle">
+  <img src="/Algorithms/images/dlx_scott_pentomino.svg" title="pentomino solution">
+  <figcaption>A solution to &#8220;Scott&#8217;s pentomino problem&#8221;. A 8x8 grid with a 2x2 hole in centre, with each pentomino being used once.</figcaption>
+</figure>
+
+<h2>Introduction</h2>
+<p>Given a collection of sets, <span class="math">\(\mathcal{S}\)</span>, where each set, <span class="math">\(\mathcal{S}^\star\)</span> in <span class="math">\(\mathcal{S}\)</span> is a subset of a larger set <span class="math">\(\mathcal{X}\)</span>. An <a href="https://en.wikipedia.org/wiki/Exact_cover">exact cover</a> problem involves picking a subcollection of sets from <span class="math">\(\mathcal{S}\)</span> such that each element in <span class="math">\(\mathcal{X}\)</span> is included in one of the subsets exacly&nbsp;once.</p>
+<p>Examples of exact cover problems&nbsp;include:</p>
+<ul>
+<li>Tiling puzzles (such as <a href="https://en.wikipedia.org/wiki/Pentomino">pentomino</a> problems) where an area has to be covered in tiles of a certain shape so that the area is covered and no tiles overlap each&nbsp;other.</li>
+<li>Soduku&nbsp;solving.</li>
+<li>The <a href="https://en.wikipedia.org/wiki/Eight_queens_puzzle">N Queens problem</a> is an example of an generalised exact cover problem where some constraints may remain&nbsp;unused.</li>
+</ul>
+<h2>Formal&nbsp;definition</h2>
+<p>Let <span class="math">\(\mathcal{S}^\dagger\)</span> be a subcollection of <span class="math">\(\mathcal{S}\)</span> that such that <span class="math">\(\mathcal{S}^\dagger\)</span> covers <span class="math">\(\mathcal{X}\)</span>. To be considered a solution to the exact cover problem three conditions has to be&nbsp;satisfied:</p>
+<ol>
+<li>The intersection between any two sets in <span class="math">\(\mathcal{S}^\dagger\)</span> is empty. That is, each element in <span class="math">\(\mathcal{X}\)</span> must only be present in one set in <span class="math">\(\mathcal{S}^\dagger\)</span>.</li>
+<li>The union of all sets in <span class="math">\(\mathcal{S}^\dagger\)</span> must be equal to <span class="math">\(\mathcal{X}\)</span>. That is, each element in <span class="math">\(\mathcal{X}\)</span> must be present in one set in <span class="math">\(\mathcal{S}^\dagger\)</span>.</li>
+<li>The empty set, <span class="math">\(\emptyset\)</span>, cannot be part of <span class="math">\(\mathcal{S}^\dagger\)</span>.</li>
+</ol>
+<h2>Example</h2>
+<p>Given a collection of sets, <span class="math">\(\mathcal{S} = \left\{ A, B, C, D, E, F \right\}\)</span>, where each set in <span class="math">\(\mathcal{S}\)</span> is a subset of <span class="math">\(\mathcal{X} = \left\{ 1, 2, 3, 4, 5, 6, 7 \right\}\)</span>.</p>
+<ul>
+<li><span class="math">\(A = \left\{ 1, 4, 7 \right\}\)</span>.</li>
+<li><span class="math">\(B = \left\{ 1, 4 \right\}\)</span>.</li>
+<li><span class="math">\(C = \left\{ 4, 5, 7 \right\}\)</span>.</li>
+<li><span class="math">\(D = \left\{ 3, 5, 6 \right\}\)</span>.</li>
+<li><span class="math">\(E = \left\{ 2, 3, 6, 7 \right\}\)</span>.</li>
+<li><span class="math">\(F = \left\{ 2, 7 \right\}\)</span>.</li>
+</ul>
+<p>The only collection of subsets in <span class="math">\(\mathcal{S}\)</span> that cover <span class="math">\(\mathcal{X}\)</span> is <span class="math">\(\mathcal{S}^\dagger = \left\{ B, D, F\right\}\)</span>.</p>
+<h2>Knuth&#8217;s Algorithm&nbsp;X</h2>
+<p><a href="https://arxiv.org/pdf/cs/0011047.pdf">Donald Knuth (2000)</a> describes an algorithm for solving the exact cover problem, which he names &#8220;Algorithm&nbsp;X&#8221;.</p>
+<p>Algorithm X works by constructing an indidence matrix, <span class="math">\(A\)</span>, where each column represents and element in <span class="math">\(\mathcal{X}\)</span> and each row is a set in <span class="math">\(\mathcal{S}\)</span>. The example above can be represented by the following&nbsp;matrix</p>
+<div class="math">$$ A = \begin{bmatrix} 
+    1 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 1 \\ 
+    1 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \\ 
+    0 &amp; 0 &amp; 0 &amp; 1 &amp; 1 &amp; 0 &amp; 1 \\ 
+    0 &amp; 0 &amp; 1 &amp; 0 &amp; 1 &amp; 1 &amp; 0 \\ 
+    0 &amp; 1 &amp; 1 &amp; 0 &amp; 0 &amp; 1 &amp; 1 \\ 
+    0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 \\ 
+   \end{bmatrix} $$</div>
+<p>The algorithm works by selecting columns and rows in the matrix, and recursivly reduce it until a solution has been found. Technically, the algorithm is a recursive, depth-first backtracking algorithm. The steps of the algorithm&nbsp;are:</p>
+<ol>
+<li>If A is empty, the problem is solved; return&nbsp;solution.</li>
+<li>Otherwise choose a column, c&nbsp;(deterministically).</li>
+<li>Choose a row, r, such that A[r, c] = 1&nbsp;(nondeterministically).</li>
+<li>If there is no row in c, such that A[r, c] = 1, there is no solution for this position;&nbsp;return</li>
+<li>Include r in the partial&nbsp;solution.</li>
+<li>For each j such that A[r, j] = 1, <ul>
+<li>delete column j from matrix&nbsp;A;</li>
+<li>for each i such that A[i, j] = 1,<ul>
+<li>delete row i from matrix&nbsp;A.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Repeat this algorithm recursively on the reduced matrix&nbsp;A.</li>
+</ol>
+<p>It is possible to limit the number of recursive calls to the algorithm by always choosing the column with the fewest ones, as this will limit the branching of the search tree that is being&nbsp;traversed.</p>
+<p>Knuth has this to say about the&nbsp;algorithm:</p>
+<blockquote>
+<p>Algorithm X is simply a statement of the obvious trial-and-error approach. (Indeed, I can’t think of any other reasonable way to do the job, in&nbsp;general.)</p>
+</blockquote>
+<h2><span class="caps">DLX</span> algorithm and an implementation in&nbsp;Python</h2>
+<p>Knuth&#8217;s motivation for describing Algorithm X is a specific implementation that he calls &#8220;Dancing Links&#8221;, where the incidence matrix is constructed by doubly linked lists. This implementation has the benefit that the incidence matrix becomes more compact, and that the removal and reinstatement of columns rows can be done by simply changing pointers in&nbsp;memory.</p>
+<p>When Algorithm X is implemented with Dancing Links, Knuth calls the algorithm <span class="caps">DLX</span>. Below is an implementation of <span class="caps">DLX</span> in Python, which is heavily inspired by an implementation by <a href="https://xor0110.wordpress.com/2011/05/09/dlx-in-python-with-actual-pointers/">Nicolau Werneck</a>. Python is not known for its speed, so this implementation can be expected to be significantly slower relative to an implementation in a compiled&nbsp;language.</p>
+<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Node</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Node in doubly linked list.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        column: A pointer to the column header.</span>
+<span class="sd">        down: A pointer to the node below the current node.</span>
+<span class="sd">        left: A pointer to the node to the left of the current node.</span>
+<span class="sd">        right: A pointer to the node to the right of the current node.</span>
+<span class="sd">        up: A pointer to the node above the current node.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">up</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">down</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">column</span> <span class="o">=</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">left_sweep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Does a left sweep over nodes in the doubly linked list.&quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span>
+        <span class="k">while</span> <span class="n">x</span> <span class="o">!=</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">x</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">left</span>
+        <span class="k">return</span>
+
+    <span class="k">def</span> <span class="nf">right_sweep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Does a right sweep over nodes in the doubly linked list.&quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span>
+        <span class="k">while</span> <span class="n">x</span> <span class="o">!=</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">x</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">right</span>
+        <span class="k">return</span>
+
+    <span class="k">def</span> <span class="nf">down_sweep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Does a down sweep over nodes in the doubly linked list.&quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">down</span>
+        <span class="k">while</span> <span class="n">x</span> <span class="o">!=</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">x</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">down</span>
+        <span class="k">return</span>
+
+    <span class="k">def</span> <span class="nf">up_sweep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Does an up sweep over nodes in the doubly linked list.&quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">up</span>
+        <span class="k">while</span> <span class="n">x</span> <span class="o">!=</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">x</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">up</span>
+        <span class="k">return</span>
+
+<span class="k">class</span> <span class="nc">DLX</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Implementation of Don Knuth&#39;s DLX algorithm.</span>
+
+<span class="sd">    Uses the Dancing Links as described in this paper:</span>
+<span class="sd">        https://arxiv.org/pdf/cs/0011047.pdf.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        h: Root node for the list header.</span>
+<span class="sd">        hdic: Dictionary with each key being a column header and its value the</span>
+<span class="sd">              pointer to the column in the list header.</span>
+<span class="sd">        kcount: List with Number of calls to the search method for each</span>
+<span class="sd">                level inthe recursion.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">rows</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Construct the incidence matrix as doubly linked lists.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            labels: List with labels of each column.</span>
+<span class="sd">            rows: List of lists. Each sublist represent a row in the incidence</span>
+<span class="sd">                  matrix, and must contain the labels of the elements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="n">Node</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hdic</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kcount</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">h</span>
+        <span class="n">hdic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hdic</span>
+
+        <span class="c1"># make header row</span>
+        <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+            <span class="c1"># append new column to end of the doubly linked list</span>
+            <span class="n">h</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">Node</span><span class="p">()</span>
+            <span class="n">h</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">h</span>
+            <span class="n">h</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">left</span>
+            <span class="n">h</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">right</span>
+
+            <span class="n">h</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">label</span>
+            <span class="n">h</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">hdic</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">left</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="n">last</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">for</span> <span class="n">rlabel</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+                <span class="n">element</span> <span class="o">=</span> <span class="n">Node</span><span class="p">()</span>
+
+                <span class="c1"># get column header</span>
+                <span class="n">element</span><span class="o">.</span><span class="n">column</span> <span class="o">=</span> <span class="n">hdic</span><span class="p">[</span><span class="n">rlabel</span><span class="p">]</span>
+                <span class="n">element</span><span class="o">.</span><span class="n">column</span><span class="o">.</span><span class="n">size</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="c1"># append Node to bottom of column</span>
+                <span class="n">element</span><span class="o">.</span><span class="n">column</span><span class="o">.</span><span class="n">up</span><span class="o">.</span><span class="n">down</span> <span class="o">=</span> <span class="n">element</span>
+                <span class="n">element</span><span class="o">.</span><span class="n">up</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">column</span><span class="o">.</span><span class="n">up</span>
+                <span class="n">element</span><span class="o">.</span><span class="n">down</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">column</span>
+                <span class="n">element</span><span class="o">.</span><span class="n">column</span><span class="o">.</span><span class="n">up</span> <span class="o">=</span> <span class="n">element</span>
+
+                <span class="k">if</span> <span class="n">last</span><span class="p">:</span>
+                    <span class="n">element</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">last</span>
+                    <span class="n">element</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">last</span><span class="o">.</span><span class="n">right</span>
+                    <span class="n">last</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">element</span>
+                    <span class="n">last</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">element</span>
+                <span class="n">last</span> <span class="o">=</span> <span class="n">element</span>
+
+    <span class="k">def</span> <span class="nf">cover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Cover column c.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            c: Column to cover.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">left</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">right</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">down_sweep</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">right_sweep</span><span class="p">():</span>
+                <span class="n">j</span><span class="o">.</span><span class="n">down</span><span class="o">.</span><span class="n">up</span> <span class="o">=</span> <span class="n">j</span><span class="o">.</span><span class="n">up</span>
+                <span class="n">j</span><span class="o">.</span><span class="n">up</span><span class="o">.</span><span class="n">down</span> <span class="o">=</span> <span class="n">j</span><span class="o">.</span><span class="n">down</span>
+                <span class="n">j</span><span class="o">.</span><span class="n">column</span><span class="o">.</span><span class="n">size</span> <span class="o">-=</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">uncover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Uncover column c.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            c: Column to uncover</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">up_sweep</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">left_sweep</span><span class="p">():</span>
+                <span class="n">j</span><span class="o">.</span><span class="n">column</span><span class="o">.</span><span class="n">size</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">j</span><span class="o">.</span><span class="n">down</span><span class="o">.</span><span class="n">up</span> <span class="o">=</span> <span class="n">j</span>
+                <span class="n">j</span><span class="o">.</span><span class="n">up</span><span class="o">.</span><span class="n">down</span> <span class="o">=</span> <span class="n">j</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">c</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">c</span>
+
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">o</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Recursive search algorithm to find exact cover solutions.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            k: Level of the recursive call. Should initially be called with</span>
+<span class="sd">               k=0.</span>
+<span class="sd">            o: List of rows in the (partial) solution up to this point.</span>
+
+<span class="sd">        Yields:</span>
+<span class="sd">            List of rows constituting a solution.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">o</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">o</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kcount</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">k</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kcount</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kcount</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="o">.</span><span class="n">right</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">o</span>
+            <span class="k">return</span>
+
+        <span class="c1"># choose the smallest column</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span>
+        <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="o">.</span><span class="n">right_sweep</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">column</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="n">size</span><span class="p">:</span>
+                <span class="n">size</span> <span class="o">=</span> <span class="n">column</span><span class="o">.</span><span class="n">size</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="n">column</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cover</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">down_sweep</span><span class="p">():</span>
+            <span class="n">o_k</span> <span class="o">=</span> <span class="n">r</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">right_sweep</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cover</span><span class="p">(</span><span class="n">j</span><span class="o">.</span><span class="n">column</span><span class="p">)</span>
+            <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">o</span><span class="o">=</span><span class="n">o</span><span class="o">+</span><span class="p">[</span><span class="n">o_k</span><span class="p">])</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">left_sweep</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">uncover</span><span class="p">(</span><span class="n">j</span><span class="o">.</span><span class="n">column</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uncover</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_row_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get labels of a row in the incidence matrix.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            row: Node in the incidence matrix.</span>
+<span class="sd">            sort (bool): Sort labels.</span>
+<span class="sd">            key (func): Key function to sort on (Default: str)</span>
+<span class="sd">            reverse (bool, optional): Reverse sort.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of all column labels in the row.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">column</span><span class="o">.</span><span class="n">label</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">right_sweep</span><span class="p">():</span>
+            <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">column</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sort</span><span class="p">:</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">labels</span>
+
+    <span class="k">def</span> <span class="nf">run_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Wrapper for search method.</span>
+
+<span class="sd">        Runs search iterator, gets the labels for the rows that are part of the</span>
+<span class="sd">        solution, and returns the list of solutions.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **kw: Keyword arguments for get_row_labels.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of solutions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kcount</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># reset call counter</span>
+
+        <span class="n">solutions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">solution</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">():</span>
+            <span class="n">solutions</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">get_row_labels</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">solution</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">solutions</span>
+</pre></div>
+
+
+<h2>Test</h2>
+<p>I&#8217;m running a simple test to see if the algorithm&nbsp;works.</p>
+<div class="highlight"><pre><span></span><span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span> <span class="c1"># columns in incidence matrix</span>
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="c1"># rows in incidence matrix</span>
+        <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">]]</span>
+
+<span class="c1"># initialize DLX class</span>
+<span class="n">cover</span> <span class="o">=</span> <span class="n">DLX</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span>
+
+<span class="c1"># run DLX algorithm and print solutions</span>
+<span class="n">solutions</span> <span class="o">=</span> <span class="n">cover</span><span class="o">.</span><span class="n">run_search</span><span class="p">()</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Expected solution: [1, 4] + [3, 5, 6] + [2, 7]&quot;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Found solution:&quot;</span><span class="p">,</span> <span class="n">solutions</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Total number of calls to recursive search: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">cover</span><span class="o">.</span><span class="n">kcount</span><span class="p">)))</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="o">%</span> <span class="n">timeit</span> <span class="n">cover</span><span class="o">.</span><span class="n">run_search</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Expected solution: [1, 4] + [3, 5, 6] + [2, 7]
+Found solution: [[[1, 4], [3, 5, 6], [2, 7]]]
+Total number of calls to recursive search: 5
+
+50.7 µs ± 751 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+</pre></div>
+
+
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="/tag/exact-cover.html">exact cover</a>
+      <a href="/tag/python.html">python</a>
+      <a href="/tag/donald-knuth.html">donald knuth</a>
+      <a href="/tag/dlx.html">dlx</a>
+    </p>
+  </div>
+
+
+
+
+
+</article>
+
+    <footer>
+<p>&copy;  </p>
+<p>    Powered by <a href="http://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="http://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a>
+</p>    </footer>
+  </main>
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " The Data Cave ",
+  "url" : "",
+  "image": "",
+  "description": ""
+}
+</script>
+
+</body>
+</html>

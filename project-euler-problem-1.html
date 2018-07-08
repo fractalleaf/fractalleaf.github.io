@@ -1,0 +1,230 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="" />
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="/theme/stylesheet/style.min.css">
+
+  <link rel="stylesheet" type="text/css" href="/theme/pygments/native.min.css">
+  <link rel="stylesheet" type="text/css" href="/theme/font-awesome/css/font-awesome.min.css">
+
+
+    <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Data Cave Atom">
+
+
+
+
+
+<meta name="author" content="Søren" />
+<meta name="description" content="Description If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23. Find the sum of all the multiples of 3 or 5 below 1000. Link to problem Brute force solution …" />
+<meta name="keywords" content="project euler, python">
+
+<meta property="og:site_name" content="The Data Cave"/>
+<meta property="og:title" content="Project Euler problem 1 - Multiples of 3 and 5"/>
+<meta property="og:description" content="Description If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23. Find the sum of all the multiples of 3 or 5 below 1000. Link to problem Brute force solution …"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="/project-euler-problem-1.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2018-07-03 00:00:00+02:00"/>
+<meta property="article:modified_time" content="2018-08-08 11:03:00+02:00"/>
+<meta property="article:author" content="/author/soren.html">
+<meta property="article:section" content="Project Euler"/>
+<meta property="article:tag" content="project euler"/>
+<meta property="article:tag" content="python"/>
+<meta property="og:image" content="">
+
+  <title>The Data Cave &ndash; Project Euler problem 1 - Multiples of 3 and 5</title>
+
+</head>
+<body>
+  <aside>
+    <div>
+      <a href="">
+        <img src="/theme/img/profile.png" alt="" title="">
+      </a>
+      <h1><a href=""></a></h1>
+
+
+      <nav>
+        <ul class="list">
+
+          <li><a href="http://alexandrevicenzi.com" target="_blank">Portfolio</a></li>
+        </ul>
+      </nav>
+
+      <ul class="social">
+        <li><a class="sc-linkedin" href="https://www.linkedin.com/in/sfrimann/" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+        <li><a class="sc-github" href="https://github.com/fractalleaf" target="_blank"><i class="fa fa-github"></i></a></li>
+      </ul>
+    </div>
+
+
+  </aside>
+  <main>
+
+    <nav>
+      <a href="">    Home
+</a>
+
+      <a href="/archives.html">Archives</a>
+      <a href="/categories.html">Categories</a>
+      <a href="/tags.html">Tags</a>
+
+      <a href="/feeds/all.atom.xml">    Atom
+</a>
+
+    </nav>
+
+<article class="single">
+  <header>
+      
+    <h1 id="project-euler-problem-1">Project Euler problem 1 - Multiples of 3 and&nbsp;5</h1>
+    <p>
+          Posted on Tue 03 July 2018 in <a href="/category/project-euler.html">Project Euler</a>
+
+
+    </p>
+  </header>
+
+
+  <div>
+    <h2>Description</h2>
+<p>If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is&nbsp;23.</p>
+<p>Find the sum of all the multiples of 3 or 5 below&nbsp;1000.</p>
+<p><a href="https://projecteuler.net/problem=1">Link to&nbsp;problem</a></p>
+<h2>Brute force&nbsp;solution</h2>
+<p>A brute force solution to the problem can be obtained by simply looping over every integer below 1000 and checking if it is divisible by either 3 or&nbsp;5.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">p001</span><span class="p">():</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">total</span> <span class="o">+=</span> <span class="n">n</span>
+    <span class="k">return</span> <span class="n">total</span>
+
+<span class="o">%</span><span class="n">timeit</span> <span class="n">p001</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>88.8 µs ± 578 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+</pre></div>
+
+
+<h2>Clever&nbsp;solution</h2>
+<p>The sum of all integers smaller than N divisible by n may be written&nbsp;as
+</p>
+<div class="math">$$f(n, N) = n \times \sum_{i=1}^{\lfloor N/n \rfloor} i = n \times \frac{\lfloor N/n \rfloor (\lfloor N/n \rfloor + 1)}{2}$$</div>
+<p>The solution to the problem is therefore given by <span class="math">\(f(3, 999) + f(5, 999) - f(15, 999)\)</span> where the last term is subtracted to take care of the doulbe counting of those integers that are divisible by both 3 and&nbsp;5.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">sumDiv</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">N</span><span class="o">//</span><span class="n">n</span>
+    <span class="k">return</span> <span class="n">n</span> <span class="o">*</span> <span class="n">p</span><span class="o">*</span><span class="p">(</span><span class="n">p</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+<span class="k">def</span> <span class="nf">p001</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">sumDiv</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">999</span><span class="p">)</span> <span class="o">+</span> <span class="n">sumDiv</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">999</span><span class="p">)</span> <span class="o">-</span> <span class="n">sumDiv</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">999</span><span class="p">)</span>
+
+<span class="o">%</span><span class="n">timeit</span> <span class="n">p001</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>692 ns ± 8.37 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
+</pre></div>
+
+
+<p>The clever solution is faster by the brute force solution by more than a factor&nbsp;100.</p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="/tag/project-euler.html">project euler</a>
+      <a href="/tag/python.html">python</a>
+    </p>
+  </div>
+
+
+
+
+
+</article>
+
+    <footer>
+<p>&copy;  </p>
+<p>    Powered by <a href="http://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="http://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a>
+</p>    </footer>
+  </main>
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " The Data Cave ",
+  "url" : "",
+  "image": "",
+  "description": ""
+}
+</script>
+
+</body>
+</html>
