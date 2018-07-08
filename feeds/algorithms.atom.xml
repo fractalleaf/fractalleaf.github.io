@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Digital Ramblings - Algorithms</title><link href="https://fractalleaf.github.io/" rel="alternate"></link><link href="https://fractalleaf.github.io/feeds/algorithms.atom.xml" rel="self"></link><id>https://fractalleaf.github.io/</id><updated>2018-07-08T10:15:00+02:00</updated><entry><title>Exact cover and Donald Knuth’s DLX algorithm</title><link href="https://fractalleaf.github.io/dlx.html" rel="alternate"></link><published>2018-07-08T10:15:00+02:00</published><updated>2018-07-08T10:15:00+02:00</updated><author><name>Søren</name></author><id>tag:fractalleaf.github.io,2018-07-08:/dlx.html</id><summary type="html">&lt;p&gt;A Python implementation of Donald Knuth&amp;#8217;s &lt;span class="caps"&gt;DLX&lt;/span&gt; algorithm for solving exact cover&amp;nbsp;problems.&lt;/p&gt;</summary><content type="html">&lt;figure align="middle"&gt;
-  &lt;img src="https://fractalleaf.github.io/Algorithms/images/dlx_scott_pentomino.svg" title="pentomino solution"&gt;
-  &lt;figcaption&gt;A solution to &amp;#8220;Scott&amp;#8217;s pentomino problem&amp;#8221;. A 8x8 grid with a 2x2 hole in centre, with each pentomino being used once.&lt;/figcaption&gt;
-&lt;/figure&gt;
-
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Digital Ramblings - Algorithms</title><link href="https://fractalleaf.github.io/" rel="alternate"></link><link href="https://fractalleaf.github.io/feeds/algorithms.atom.xml" rel="self"></link><id>https://fractalleaf.github.io/</id><updated>2018-07-08T10:15:00+02:00</updated><entry><title>Exact cover and Donald Knuth’s DLX algorithm</title><link href="https://fractalleaf.github.io/dlx.html" rel="alternate"></link><published>2018-07-08T10:15:00+02:00</published><updated>2018-07-08T10:15:00+02:00</updated><author><name>Søren</name></author><id>tag:fractalleaf.github.io,2018-07-08:/dlx.html</id><summary type="html">&lt;p&gt;A Python implementation of Donald Knuth&amp;#8217;s &lt;span class="caps"&gt;DLX&lt;/span&gt; algorithm for solving exact cover&amp;nbsp;problems.&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://github.com/fractalleaf/exact-cover"&gt;Link to GitHub&amp;nbsp;repository&lt;/a&gt;&lt;/p&gt;
 &lt;h2&gt;Introduction&lt;/h2&gt;
 &lt;p&gt;Given a collection of sets, &lt;span class="math"&gt;\(\mathcal{S}\)&lt;/span&gt;, where each set, &lt;span class="math"&gt;\(\mathcal{S}^\star\)&lt;/span&gt; in &lt;span class="math"&gt;\(\mathcal{S}\)&lt;/span&gt; is a subset of a larger set &lt;span class="math"&gt;\(\mathcal{X}\)&lt;/span&gt;. An &lt;a href="https://en.wikipedia.org/wiki/Exact_cover"&gt;exact cover&lt;/a&gt; problem involves picking a subcollection of sets from &lt;span class="math"&gt;\(\mathcal{S}\)&lt;/span&gt; such that each element in &lt;span class="math"&gt;\(\mathcal{X}\)&lt;/span&gt; is included in one of the subsets exacly&amp;nbsp;once.&lt;/p&gt;
 &lt;p&gt;Examples of exact cover problems&amp;nbsp;include:&lt;/p&gt;
@@ -12,10 +8,15 @@
 &lt;li&gt;Soduku&amp;nbsp;solving.&lt;/li&gt;
 &lt;li&gt;The &lt;a href="https://en.wikipedia.org/wiki/Eight_queens_puzzle"&gt;N Queens problem&lt;/a&gt; is an example of an generalised exact cover problem where some constraints may remain&amp;nbsp;unused.&lt;/li&gt;
 &lt;/ul&gt;
+&lt;figure align="middle"&gt;
+  &lt;img src="https://fractalleaf.github.io/Algorithms/images/dlx_scott_pentomino.svg" title="pentomino solution"&gt;
+  &lt;figcaption&gt;A solution to &amp;#8220;Scott&amp;#8217;s pentomino problem&amp;#8221;. A 8x8 grid with a 2x2 hole in centre, with each pentomino being used once.&lt;/figcaption&gt;
+&lt;/figure&gt;
+
 &lt;h2&gt;Formal&amp;nbsp;definition&lt;/h2&gt;
-&lt;p&gt;Let &lt;span class="math"&gt;\(\mathcal{S}^\dagger\)&lt;/span&gt; be a subcollection of &lt;span class="math"&gt;\(\mathcal{S}\)&lt;/span&gt; that such that &lt;span class="math"&gt;\(\mathcal{S}^\dagger\)&lt;/span&gt; covers &lt;span class="math"&gt;\(\mathcal{X}\)&lt;/span&gt;. To be considered a solution to the exact cover problem three conditions has to be&amp;nbsp;satisfied:&lt;/p&gt;
+&lt;p&gt;Let &lt;span class="math"&gt;\(\mathcal{S}^\dagger\)&lt;/span&gt; be a subcollection of &lt;span class="math"&gt;\(\mathcal{S}\)&lt;/span&gt; such that &lt;span class="math"&gt;\(\mathcal{S}^\dagger\)&lt;/span&gt; covers &lt;span class="math"&gt;\(\mathcal{X}\)&lt;/span&gt;. To be considered a solution to the exact cover problem three conditions have to be&amp;nbsp;satisfied:&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;The intersection between any two sets in &lt;span class="math"&gt;\(\mathcal{S}^\dagger\)&lt;/span&gt; is empty. That is, each element in &lt;span class="math"&gt;\(\mathcal{X}\)&lt;/span&gt; must only be present in one set in &lt;span class="math"&gt;\(\mathcal{S}^\dagger\)&lt;/span&gt;.&lt;/li&gt;
+&lt;li&gt;The intersection between any two sets in &lt;span class="math"&gt;\(\mathcal{S}^\dagger\)&lt;/span&gt; has to be empty. That is, each element in &lt;span class="math"&gt;\(\mathcal{X}\)&lt;/span&gt; must only be present in one set in &lt;span class="math"&gt;\(\mathcal{S}^\dagger\)&lt;/span&gt;.&lt;/li&gt;
 &lt;li&gt;The union of all sets in &lt;span class="math"&gt;\(\mathcal{S}^\dagger\)&lt;/span&gt; must be equal to &lt;span class="math"&gt;\(\mathcal{X}\)&lt;/span&gt;. That is, each element in &lt;span class="math"&gt;\(\mathcal{X}\)&lt;/span&gt; must be present in one set in &lt;span class="math"&gt;\(\mathcal{S}^\dagger\)&lt;/span&gt;.&lt;/li&gt;
 &lt;li&gt;The empty set, &lt;span class="math"&gt;\(\emptyset\)&lt;/span&gt;, cannot be part of &lt;span class="math"&gt;\(\mathcal{S}^\dagger\)&lt;/span&gt;.&lt;/li&gt;
 &lt;/ol&gt;
@@ -31,8 +32,8 @@
 &lt;/ul&gt;
 &lt;p&gt;The only collection of subsets in &lt;span class="math"&gt;\(\mathcal{S}\)&lt;/span&gt; that cover &lt;span class="math"&gt;\(\mathcal{X}\)&lt;/span&gt; is &lt;span class="math"&gt;\(\mathcal{S}^\dagger = \left\{ B, D, F\right\}\)&lt;/span&gt;.&lt;/p&gt;
 &lt;h2&gt;Knuth&amp;#8217;s Algorithm&amp;nbsp;X&lt;/h2&gt;
-&lt;p&gt;&lt;a href="https://arxiv.org/pdf/cs/0011047.pdf"&gt;Donald Knuth (2000)&lt;/a&gt; describes an algorithm for solving the exact cover problem, which he names &amp;#8220;Algorithm&amp;nbsp;X&amp;#8221;.&lt;/p&gt;
-&lt;p&gt;Algorithm X works by constructing an indidence matrix, &lt;span class="math"&gt;\(A\)&lt;/span&gt;, where each column represents and element in &lt;span class="math"&gt;\(\mathcal{X}\)&lt;/span&gt; and each row is a set in &lt;span class="math"&gt;\(\mathcal{S}\)&lt;/span&gt;. The example above can be represented by the following&amp;nbsp;matrix&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://arxiv.org/pdf/cs/0011047.pdf"&gt;Donald Knuth (2000)&lt;/a&gt; described an algorithm for solving the exact cover problem, which he named &amp;#8220;Algorithm&amp;nbsp;X&amp;#8221;.&lt;/p&gt;
+&lt;p&gt;Algorithm X works by constructing an indidence matrix, &lt;span class="math"&gt;\(A\)&lt;/span&gt;, where each column represents and element in &lt;span class="math"&gt;\(\mathcal{X}\)&lt;/span&gt; and each row represents a set in &lt;span class="math"&gt;\(\mathcal{S}\)&lt;/span&gt;. The example above can be represented by the following&amp;nbsp;matrix&lt;/p&gt;
 &lt;div class="math"&gt;$$ A = \begin{bmatrix} 
     1 &amp;amp; 0 &amp;amp; 0 &amp;amp; 1 &amp;amp; 0 &amp;amp; 0 &amp;amp; 1 \\ 
     1 &amp;amp; 0 &amp;amp; 0 &amp;amp; 1 &amp;amp; 0 &amp;amp; 0 &amp;amp; 0 \\ 
@@ -41,7 +42,7 @@
     0 &amp;amp; 1 &amp;amp; 1 &amp;amp; 0 &amp;amp; 0 &amp;amp; 1 &amp;amp; 1 \\ 
     0 &amp;amp; 1 &amp;amp; 0 &amp;amp; 0 &amp;amp; 0 &amp;amp; 0 &amp;amp; 1 \\ 
    \end{bmatrix} $$&lt;/div&gt;
-&lt;p&gt;The algorithm works by selecting columns and rows in the matrix, and recursivly reduce it until a solution has been found. Technically, the algorithm is a recursive, depth-first backtracking algorithm. The steps of the algorithm&amp;nbsp;are:&lt;/p&gt;
+&lt;p&gt;The algorithm works by selecting columns and rows in the matrix, recursively reducing it as more contraints are incorporated into the partial solution. If the algorithm can go no further (either because a solution has been found or because the partial solution is a dead end) the algorithm backtracks and goes down another branch. Solutions are returned to the caller. Technically, the algorithm is a recursive, depth-first backtracking algorithm. The steps of the algorithm&amp;nbsp;are:&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;If A is empty, the problem is solved; return&amp;nbsp;solution.&lt;/li&gt;
 &lt;li&gt;Otherwise choose a column, c&amp;nbsp;(deterministically).&lt;/li&gt;
@@ -58,14 +59,14 @@
 &lt;/li&gt;
 &lt;li&gt;Repeat this algorithm recursively on the reduced matrix&amp;nbsp;A.&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;It is possible to limit the number of recursive calls to the algorithm by always choosing the column with the fewest ones, as this will limit the branching of the search tree that is being&amp;nbsp;traversed.&lt;/p&gt;
-&lt;p&gt;Knuth has this to say about the&amp;nbsp;algorithm:&lt;/p&gt;
+&lt;p&gt;It is possible to limit the running time of the algorithm by always choosing the column with the fewest ones. This will limit the branching of the search tree that is being traversed, and hence also the number of recursive calls to the&amp;nbsp;algorithm.&lt;/p&gt;
+&lt;p&gt;Knuth himself remarks the following about his&amp;nbsp;algorithm:&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Algorithm X is simply a statement of the obvious trial-and-error approach. (Indeed, I can’t think of any other reasonable way to do the job, in&amp;nbsp;general.)&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2&gt;&lt;span class="caps"&gt;DLX&lt;/span&gt; algorithm and an implementation in&amp;nbsp;Python&lt;/h2&gt;
-&lt;p&gt;Knuth&amp;#8217;s motivation for describing Algorithm X is a specific implementation that he calls &amp;#8220;Dancing Links&amp;#8221;, where the incidence matrix is constructed by doubly linked lists. This implementation has the benefit that the incidence matrix becomes more compact, and that the removal and reinstatement of columns rows can be done by simply changing pointers in&amp;nbsp;memory.&lt;/p&gt;
-&lt;p&gt;When Algorithm X is implemented with Dancing Links, Knuth calls the algorithm &lt;span class="caps"&gt;DLX&lt;/span&gt;. Below is an implementation of &lt;span class="caps"&gt;DLX&lt;/span&gt; in Python, which is heavily inspired by an implementation by &lt;a href="https://xor0110.wordpress.com/2011/05/09/dlx-in-python-with-actual-pointers/"&gt;Nicolau Werneck&lt;/a&gt;. Python is not known for its speed, so this implementation can be expected to be significantly slower relative to an implementation in a compiled&amp;nbsp;language.&lt;/p&gt;
+&lt;p&gt;Knuth&amp;#8217;s motivation for describing Algorithm X was a specific implementation he called &amp;#8220;Dancing Links&amp;#8221;. In Dancing Links the incidence matrix is constructed with doubly linked circular lists, which only stores the ones. This has the benefit that the incidence matrix becomes sparse, meaning that it takes up less memory and becomes faster to search through. Furthermore, removing rows and columns in the matrix can be done by simply reassigning pointers to different addresses in the linked&amp;nbsp;lists.&lt;/p&gt;
+&lt;p&gt;When Algorithm X is implemented with Dancing Links, Knuth calls the algorithm &lt;span class="caps"&gt;DLX&lt;/span&gt;. Below is an implementation of &lt;span class="caps"&gt;DLX&lt;/span&gt; in Python, which is heavily inspired by an implementation by &lt;a href="https://xor0110.wordpress.com/2011/05/09/dlx-in-python-with-actual-pointers/"&gt;Nicolau Werneck&lt;/a&gt;. Python is not known for its speed, so this implementation can be expected to be significantly slower relative to a good implementation in a compiled&amp;nbsp;language.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Node&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
     &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;Node in doubly linked list.&lt;/span&gt;
 
