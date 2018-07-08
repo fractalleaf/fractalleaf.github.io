@@ -8,10 +8,7 @@ Authors: Søren
 Summary: A Python implementation of Donald Knuth's DLX algorithm for solving exact cover problems.
 Image: /Algorithms/images/dlx_scott_pentomino.svg
 
-<figure align="middle">
-  <img src="{filename}/Algorithms/images/dlx_scott_pentomino.svg" title="pentomino solution">
-  <figcaption>A solution to "Scott's pentomino problem". A 8x8 grid with a 2x2 hole in centre, with each pentomino being used once.</figcaption>
-</figure>
+[Link to GitHub repository](https://github.com/fractalleaf/exact-cover)
 
 ## Introduction
 
@@ -23,10 +20,15 @@ Examples of exact cover problems include:
  * Soduku solving.
  * The [N Queens problem](https://en.wikipedia.org/wiki/Eight_queens_puzzle) is an example of an generalised exact cover problem where some constraints may remain unused.
 
-## Formal definition
-Let $\mathcal{S}^\dagger$ be a subcollection of $\mathcal{S}$ that such that $\mathcal{S}^\dagger$ covers $\mathcal{X}$. To be considered a solution to the exact cover problem three conditions has to be satisfied:
+<figure align="middle">
+  <img src="{filename}/Algorithms/images/dlx_scott_pentomino.svg" title="pentomino solution">
+  <figcaption>A solution to "Scott's pentomino problem". A 8x8 grid with a 2x2 hole in centre, with each pentomino being used once.</figcaption>
+</figure>
 
- 1. The intersection between any two sets in $\mathcal{S}^\dagger$ is empty. That is, each element in $\mathcal{X}$ must only be present in one set in $\mathcal{S}^\dagger$.
+## Formal definition
+Let $\mathcal{S}^\dagger$ be a subcollection of $\mathcal{S}$ such that $\mathcal{S}^\dagger$ covers $\mathcal{X}$. To be considered a solution to the exact cover problem three conditions have to be satisfied:
+
+ 1. The intersection between any two sets in $\mathcal{S}^\dagger$ has to be empty. That is, each element in $\mathcal{X}$ must only be present in one set in $\mathcal{S}^\dagger$.
  2. The union of all sets in $\mathcal{S}^\dagger$ must be equal to $\mathcal{X}$. That is, each element in $\mathcal{X}$ must be present in one set in $\mathcal{S}^\dagger$.
  3. The empty set, $\emptyset$, cannot be part of $\mathcal{S}^\dagger$.
 
@@ -45,9 +47,9 @@ The only collection of subsets in $\mathcal{S}$ that cover $\mathcal{X}$ is $\ma
 
 ## Knuth's Algorithm X
 
-[Donald Knuth (2000)](https://arxiv.org/pdf/cs/0011047.pdf) describes an algorithm for solving the exact cover problem, which he names "Algorithm X".
+[Donald Knuth (2000)](https://arxiv.org/pdf/cs/0011047.pdf) described an algorithm for solving the exact cover problem, which he named "Algorithm X".
 
-Algorithm X works by constructing an indidence matrix, $A$, where each column represents and element in $\mathcal{X}$ and each row is a set in $\mathcal{S}$. The example above can be represented by the following matrix
+Algorithm X works by constructing an indidence matrix, $A$, where each column represents and element in $\mathcal{X}$ and each row represents a set in $\mathcal{S}$. The example above can be represented by the following matrix
 
 $$ A = \begin{bmatrix} 
     1 & 0 & 0 & 1 & 0 & 0 & 1 \\ 
@@ -58,7 +60,7 @@ $$ A = \begin{bmatrix}
     0 & 1 & 0 & 0 & 0 & 0 & 1 \\ 
    \end{bmatrix} $$
 
-The algorithm works by selecting columns and rows in the matrix, and recursivly reduce it until a solution has been found. Technically, the algorithm is a recursive, depth-first backtracking algorithm. The steps of the algorithm are:
+The algorithm works by selecting columns and rows in the matrix, recursively reducing it as more contraints are incorporated into the partial solution. If the algorithm can go no further (either because a solution has been found or because the partial solution is a dead end) the algorithm backtracks and goes down another branch. Solutions are returned to the caller. Technically, the algorithm is a recursive, depth-first backtracking algorithm. The steps of the algorithm are:
 
 1. If A is empty, the problem is solved; return solution.
 2. Otherwise choose a column, c (deterministically).
@@ -71,18 +73,18 @@ The algorithm works by selecting columns and rows in the matrix, and recursivly 
          - delete row i from matrix A.
 7. Repeat this algorithm recursively on the reduced matrix A.
 
-It is possible to limit the number of recursive calls to the algorithm by always choosing the column with the fewest ones, as this will limit the branching of the search tree that is being traversed.
+It is possible to limit the running time of the algorithm by always choosing the column with the fewest ones. This will limit the branching of the search tree that is being traversed, and hence also the number of recursive calls to the algorithm.
 
-Knuth has this to say about the algorithm:
+Knuth himself remarks the following about his algorithm:
 
 > Algorithm X is simply a statement of the obvious trial-and-error approach. (Indeed, I can’t think of any other reasonable way to do the job, in general.)
 
 
 ## DLX algorithm and an implementation in Python
 
-Knuth's motivation for describing Algorithm X is a specific implementation that he calls "Dancing Links", where the incidence matrix is constructed by doubly linked lists. This implementation has the benefit that the incidence matrix becomes more compact, and that the removal and reinstatement of columns rows can be done by simply changing pointers in memory.
+Knuth's motivation for describing Algorithm X was a specific implementation he called "Dancing Links". In Dancing Links the incidence matrix is constructed with doubly linked circular lists, which only stores the ones. This has the benefit that the incidence matrix becomes sparse, meaning that it takes up less memory and becomes faster to search through. Furthermore, removing rows and columns in the matrix can be done by simply reassigning pointers to different addresses in the linked lists.
 
-When Algorithm X is implemented with Dancing Links, Knuth calls the algorithm DLX. Below is an implementation of DLX in Python, which is heavily inspired by an implementation by [Nicolau Werneck](https://xor0110.wordpress.com/2011/05/09/dlx-in-python-with-actual-pointers/). Python is not known for its speed, so this implementation can be expected to be significantly slower relative to an implementation in a compiled language.
+When Algorithm X is implemented with Dancing Links, Knuth calls the algorithm DLX. Below is an implementation of DLX in Python, which is heavily inspired by an implementation by [Nicolau Werneck](https://xor0110.wordpress.com/2011/05/09/dlx-in-python-with-actual-pointers/). Python is not known for its speed, so this implementation can be expected to be significantly slower relative to a good implementation in a compiled language.
 
 
 ```python
