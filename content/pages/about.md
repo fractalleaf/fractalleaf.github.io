@@ -14,5 +14,5 @@ content interesting.
 ## About me
 
 I live in Copenhagen, Denmark, where I also work as a data scientist. I have a
-background in astrophysics where I studied star formation; primarily be
+background in astrophysics where I studied star formation; primarily by
 analysing data from large simulations.
