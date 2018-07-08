@@ -1,65 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>The Data Cave - Søren</title><link href="https://fractalleaf.github.io/" rel="alternate"></link><link href="https://fractalleaf.github.io/feeds/soren.atom.xml" rel="self"></link><id>https://fractalleaf.github.io/</id><updated>2018-08-08T11:03:00+02:00</updated><entry><title>Exact cover and Donald Knuth’s DLX algorithm</title><link href="https://fractalleaf.github.io/dlx.html" rel="alternate"></link><published>2018-07-08T10:15:00+02:00</published><updated>2018-07-08T10:15:00+02:00</updated><author><name>Søren</name></author><id>tag:fractalleaf.github.io,2018-07-08:/dlx.html</id><summary type="html">&lt;figure align="middle"&gt;
-  &lt;img src="https://fractalleaf.github.io/Algorithms/images/dlx_scott_pentomino.svg" title="pentomino solution"&gt;
-  &lt;figcaption&gt;A solution to &amp;#8220;Scott&amp;#8217;s pentomino problem&amp;#8221;. A 8x8 grid with a 2x2 hole in centre, with each pentomino being used once.&lt;/figcaption&gt;
-&lt;/figure&gt;
-
-&lt;h2&gt;Introduction&lt;/h2&gt;
-&lt;p&gt;Given a collection of sets, &lt;span class="math"&gt;\(\mathcal{S}\)&lt;/span&gt;, where each set, &lt;span class="math"&gt;\(\mathcal{S}^\star\)&lt;/span&gt; in &lt;span class="math"&gt;\(\mathcal{S}\)&lt;/span&gt; is a subset of a larger set &lt;span class="math"&gt;\(\mathcal{X}\)&lt;/span&gt;. An &lt;a href="https://en.wikipedia.org/wiki/Exact_cover"&gt;exact …&lt;/a&gt;&lt;/p&gt;&lt;script type='text/javascript'&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
-    var align = "center",
-        indent = "0em",
-        linebreak = "false";
-
-    if (false) {
-        align = (screen.width &lt; 768) ? "left" : align;
-        indent = (screen.width &lt; 768) ? "0em" : indent;
-        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
-    }
-
-    var mathjaxscript = document.createElement('script');
-    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
-    mathjaxscript.type = 'text/javascript';
-    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
-    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
-        "MathJax.Hub.Config({" +
-        "    config: ['MMLorHTML.js']," +
-        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
-        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
-        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
-        "    displayAlign: '"+ align +"'," +
-        "    displayIndent: '"+ indent +"'," +
-        "    showMathMenu: true," +
-        "    messageStyle: 'normal'," +
-        "    tex2jax: { " +
-        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
-        "        displayMath: [ ['$$','$$'] ]," +
-        "        processEscapes: true," +
-        "        preview: 'TeX'," +
-        "    }, " +
-        "    'HTML-CSS': { " +
-        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
-        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
-        "    }, " +
-        "}); " +
-        "if ('default' !== 'default') {" +
-            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-        "}";
-    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
-}
-&lt;/script&gt;</summary><content type="html">&lt;figure align="middle"&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Digital Ramblings - Søren</title><link href="https://fractalleaf.github.io/" rel="alternate"></link><link href="https://fractalleaf.github.io/feeds/soren.atom.xml" rel="self"></link><id>https://fractalleaf.github.io/</id><updated>2018-08-08T11:03:00+02:00</updated><entry><title>Exact cover and Donald Knuth’s DLX algorithm</title><link href="https://fractalleaf.github.io/dlx.html" rel="alternate"></link><published>2018-07-08T10:15:00+02:00</published><updated>2018-07-08T10:15:00+02:00</updated><author><name>Søren</name></author><id>tag:fractalleaf.github.io,2018-07-08:/dlx.html</id><summary type="html">&lt;p&gt;A Python implementation of Donald Knuth&amp;#8217;s &lt;span class="caps"&gt;DLX&lt;/span&gt; algorithm for solving exact cover&amp;nbsp;problems.&lt;/p&gt;</summary><content type="html">&lt;figure align="middle"&gt;
   &lt;img src="https://fractalleaf.github.io/Algorithms/images/dlx_scott_pentomino.svg" title="pentomino solution"&gt;
   &lt;figcaption&gt;A solution to &amp;#8220;Scott&amp;#8217;s pentomino problem&amp;#8221;. A 8x8 grid with a 2x2 hole in centre, with each pentomino being used once.&lt;/figcaption&gt;
 &lt;/figure&gt;
@@ -436,11 +376,7 @@ Total number of calls to recursive search: 5
         "}";
     (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
 }
-&lt;/script&gt;</content><category term="exact cover"></category><category term="python"></category><category term="donald knuth"></category><category term="dlx"></category></entry><entry><title>Project Euler problem 1 - Multiples of 3 and 5</title><link href="https://fractalleaf.github.io/project-euler-problem-1.html" rel="alternate"></link><published>2018-07-03T00:00:00+02:00</published><updated>2018-08-08T11:03:00+02:00</updated><author><name>Søren</name></author><id>tag:fractalleaf.github.io,2018-07-03:/project-euler-problem-1.html</id><summary type="html">&lt;h2&gt;Description&lt;/h2&gt;
-&lt;p&gt;If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is&amp;nbsp;23.&lt;/p&gt;
-&lt;p&gt;Find the sum of all the multiples of 3 or 5 below&amp;nbsp;1000.&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://projecteuler.net/problem=1"&gt;Link to&amp;nbsp;problem&lt;/a&gt;&lt;/p&gt;
-&lt;h2&gt;Brute force&amp;nbsp;solution …&lt;/h2&gt;</summary><content type="html">&lt;h2&gt;Description&lt;/h2&gt;
+&lt;/script&gt;</content><category term="exact cover"></category><category term="python"></category><category term="dlx"></category></entry><entry><title>Project Euler problem 1 - Multiples of 3 and 5</title><link href="https://fractalleaf.github.io/project-euler-problem-1.html" rel="alternate"></link><published>2018-07-03T00:00:00+02:00</published><updated>2018-08-08T11:03:00+02:00</updated><author><name>Søren</name></author><id>tag:fractalleaf.github.io,2018-07-03:/project-euler-problem-1.html</id><summary type="html">&lt;p&gt;Solution for the first Project Euler problem about calculating the sum of integers divisible by 3 and&amp;nbsp;5.&lt;/p&gt;</summary><content type="html">&lt;h2&gt;Description&lt;/h2&gt;
 &lt;p&gt;If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is&amp;nbsp;23.&lt;/p&gt;
 &lt;p&gt;Find the sum of all the multiples of 3 or 5 below&amp;nbsp;1000.&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://projecteuler.net/problem=1"&gt;Link to&amp;nbsp;problem&lt;/a&gt;&lt;/p&gt;
