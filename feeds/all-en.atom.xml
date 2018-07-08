@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>The Data Cave</title><link href="/" rel="alternate"></link><link href="/feeds/all-en.atom.xml" rel="self"></link><id>/</id><updated>2018-08-08T11:03:00+02:00</updated><entry><title>Exact cover and Donald Knuth’s DLX algorithm</title><link href="/dlx.html" rel="alternate"></link><published>2018-07-08T10:15:00+02:00</published><updated>2018-07-08T10:15:00+02:00</updated><author><name>Søren</name></author><id>tag:None,2018-07-08:/dlx.html</id><summary type="html">&lt;figure align="middle"&gt;
-  &lt;img src="/Algorithms/images/dlx_scott_pentomino.svg" title="pentomino solution"&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>The Data Cave</title><link href="https://fractalleaf.github.io/" rel="alternate"></link><link href="https://fractalleaf.github.io/feeds/all-en.atom.xml" rel="self"></link><id>https://fractalleaf.github.io/</id><updated>2018-08-08T11:03:00+02:00</updated><entry><title>Exact cover and Donald Knuth’s DLX algorithm</title><link href="https://fractalleaf.github.io/dlx.html" rel="alternate"></link><published>2018-07-08T10:15:00+02:00</published><updated>2018-07-08T10:15:00+02:00</updated><author><name>Søren</name></author><id>tag:fractalleaf.github.io,2018-07-08:/dlx.html</id><summary type="html">&lt;figure align="middle"&gt;
+  &lt;img src="https://fractalleaf.github.io/Algorithms/images/dlx_scott_pentomino.svg" title="pentomino solution"&gt;
   &lt;figcaption&gt;A solution to &amp;#8220;Scott&amp;#8217;s pentomino problem&amp;#8221;. A 8x8 grid with a 2x2 hole in centre, with each pentomino being used once.&lt;/figcaption&gt;
 &lt;/figure&gt;
 
@@ -60,7 +60,7 @@
     (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
 }
 &lt;/script&gt;</summary><content type="html">&lt;figure align="middle"&gt;
-  &lt;img src="/Algorithms/images/dlx_scott_pentomino.svg" title="pentomino solution"&gt;
+  &lt;img src="https://fractalleaf.github.io/Algorithms/images/dlx_scott_pentomino.svg" title="pentomino solution"&gt;
   &lt;figcaption&gt;A solution to &amp;#8220;Scott&amp;#8217;s pentomino problem&amp;#8221;. A 8x8 grid with a 2x2 hole in centre, with each pentomino being used once.&lt;/figcaption&gt;
 &lt;/figure&gt;
 
@@ -436,7 +436,7 @@ Total number of calls to recursive search: 5
         "}";
     (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
 }
-&lt;/script&gt;</content><category term="exact cover"></category><category term="python"></category><category term="donald knuth"></category><category term="dlx"></category></entry><entry><title>Project Euler problem 1 - Multiples of 3 and 5</title><link href="/project-euler-problem-1.html" rel="alternate"></link><published>2018-07-03T00:00:00+02:00</published><updated>2018-08-08T11:03:00+02:00</updated><author><name>Søren</name></author><id>tag:None,2018-07-03:/project-euler-problem-1.html</id><summary type="html">&lt;h2&gt;Description&lt;/h2&gt;
+&lt;/script&gt;</content><category term="exact cover"></category><category term="python"></category><category term="donald knuth"></category><category term="dlx"></category></entry><entry><title>Project Euler problem 1 - Multiples of 3 and 5</title><link href="https://fractalleaf.github.io/project-euler-problem-1.html" rel="alternate"></link><published>2018-07-03T00:00:00+02:00</published><updated>2018-08-08T11:03:00+02:00</updated><author><name>Søren</name></author><id>tag:fractalleaf.github.io,2018-07-03:/project-euler-problem-1.html</id><summary type="html">&lt;h2&gt;Description&lt;/h2&gt;
 &lt;p&gt;If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is&amp;nbsp;23.&lt;/p&gt;
 &lt;p&gt;Find the sum of all the multiples of 3 or 5 below&amp;nbsp;1000.&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://projecteuler.net/problem=1"&gt;Link to&amp;nbsp;problem&lt;/a&gt;&lt;/p&gt;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0"><channel><title>The Data Cave - Søren</title><link>/</link><description></description><lastBuildDate>Wed, 08 Aug 2018 11:03:00 +0200</lastBuildDate><item><title>Exact cover and Donald Knuth’s DLX algorithm</title><link>/dlx.html</link><description>&lt;figure align="middle"&gt;
-  &lt;img src="/Algorithms/images/dlx_scott_pentomino.svg" title="pentomino solution"&gt;
+<rss version="2.0"><channel><title>The Data Cave - Søren</title><link>https://fractalleaf.github.io/</link><description>Web Developer</description><lastBuildDate>Wed, 08 Aug 2018 11:03:00 +0200</lastBuildDate><item><title>Exact cover and Donald Knuth’s DLX algorithm</title><link>https://fractalleaf.github.io/dlx.html</link><description>&lt;figure align="middle"&gt;
+  &lt;img src="https://fractalleaf.github.io/Algorithms/images/dlx_scott_pentomino.svg" title="pentomino solution"&gt;
   &lt;figcaption&gt;A solution to &amp;#8220;Scott&amp;#8217;s pentomino problem&amp;#8221;. A 8x8 grid with a 2x2 hole in centre, with each pentomino being used once.&lt;/figcaption&gt;
 &lt;/figure&gt;
 
@@ -59,8 +59,8 @@
         "}";
     (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
 }
-&lt;/script&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Søren</dc:creator><pubDate>Sun, 08 Jul 2018 10:15:00 +0200</pubDate><guid isPermaLink="false">tag:None,2018-07-08:/dlx.html</guid><category>exact cover</category><category>python</category><category>donald knuth</category><category>dlx</category></item><item><title>Project Euler problem 1 - Multiples of 3 and 5</title><link>/project-euler-problem-1.html</link><description>&lt;h2&gt;Description&lt;/h2&gt;
+&lt;/script&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Søren</dc:creator><pubDate>Sun, 08 Jul 2018 10:15:00 +0200</pubDate><guid isPermaLink="false">tag:fractalleaf.github.io,2018-07-08:/dlx.html</guid><category>exact cover</category><category>python</category><category>donald knuth</category><category>dlx</category></item><item><title>Project Euler problem 1 - Multiples of 3 and 5</title><link>https://fractalleaf.github.io/project-euler-problem-1.html</link><description>&lt;h2&gt;Description&lt;/h2&gt;
 &lt;p&gt;If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is&amp;nbsp;23.&lt;/p&gt;
 &lt;p&gt;Find the sum of all the multiples of 3 or 5 below&amp;nbsp;1000.&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://projecteuler.net/problem=1"&gt;Link to&amp;nbsp;problem&lt;/a&gt;&lt;/p&gt;
-&lt;h2&gt;Brute force&amp;nbsp;solution …&lt;/h2&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Søren</dc:creator><pubDate>Tue, 03 Jul 2018 00:00:00 +0200</pubDate><guid isPermaLink="false">tag:None,2018-07-03:/project-euler-problem-1.html</guid><category>project euler</category><category>python</category></item></channel></rss>
+&lt;h2&gt;Brute force&amp;nbsp;solution …&lt;/h2&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Søren</dc:creator><pubDate>Tue, 03 Jul 2018 00:00:00 +0200</pubDate><guid isPermaLink="false">tag:fractalleaf.github.io,2018-07-03:/project-euler-problem-1.html</guid><category>project euler</category><category>python</category></item></channel></rss>
