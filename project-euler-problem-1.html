@@ -95,10 +95,11 @@
 
 
   <div>
-    <h2>Description</h2>
+    <p><a href="https://projecteuler.net/problem=1">Link to problem on Project Euler&nbsp;homepage</a></p>
+<p><a href="https://github.com/fractalleaf/project-euler/tree/master/p001">Link to Github&nbsp;repository</a></p>
+<h2>Description</h2>
 <p>If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is&nbsp;23.</p>
 <p>Find the sum of all the multiples of 3 or 5 below&nbsp;1000.</p>
-<p><a href="https://projecteuler.net/problem=1">Link to&nbsp;problem</a></p>
 <h2>Brute force&nbsp;solution</h2>
 <p>A brute force solution to the problem can be obtained by simply looping over every integer below 1000 and checking if it is divisible by either 3 or&nbsp;5.</p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">p001</span><span class="p">():</span>
@@ -117,10 +118,9 @@
 
 
 <h2>Clever&nbsp;solution</h2>
-<p>The sum of all integers smaller than N divisible by n may be written&nbsp;as
-</p>
+<p>The sum of all integers smaller than N, divisible by n, may be written&nbsp;as</p>
 <div class="math">$$f(n, N) = n \times \sum_{i=1}^{\lfloor N/n \rfloor} i = n \times \frac{\lfloor N/n \rfloor (\lfloor N/n \rfloor + 1)}{2}$$</div>
-<p>The solution to the problem is therefore given by <span class="math">\(f(3, 999) + f(5, 999) - f(15, 999)\)</span> where the last term is subtracted to take care of the doulbe counting of those integers that are divisible by both 3 and&nbsp;5.</p>
+<p>The solution to the problem is therefore given by <span class="math">\(f(3, 999) + f(5, 999) - f(15, 999)\)</span> where the last term is subtracted to take care of the double counting of those integers that are divisible by both 3 and&nbsp;5.</p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">sumDiv</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
     <span class="n">p</span> <span class="o">=</span> <span class="n">N</span><span class="o">//</span><span class="n">n</span>
     <span class="k">return</span> <span class="n">n</span> <span class="o">*</span> <span class="n">p</span><span class="o">*</span><span class="p">(</span><span class="n">p</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
@@ -136,7 +136,7 @@
 </pre></div>
 
 
-<p>The clever solution is faster by the brute force solution by more than a factor&nbsp;100.</p>
+<p>The clever solution outperforms the brute force solution by more than a factor&nbsp;100.</p>
 <script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
     var align = "center",
         indent = "0em",
@@ -202,13 +202,6 @@
 
 
 
-  <div class="related-posts">
-    <h4>    You might enjoy
-</h4>
-    <ul class="related-posts">
-      <li><a href="https://fractalleaf.github.io/dlx.html">Exact cover and Donald Knuth&#8217;s <span class="caps">DLX</span>&nbsp;algorithm</a></li>
-    </ul>
-  </div>
 
 
 </article>

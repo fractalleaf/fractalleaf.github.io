@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Digital Ramblings - Project Euler</title><link href="https://fractalleaf.github.io/" rel="alternate"></link><link href="https://fractalleaf.github.io/feeds/project-euler.atom.xml" rel="self"></link><id>https://fractalleaf.github.io/</id><updated>2018-08-08T11:03:00+02:00</updated><entry><title>Project Euler problem 1 - Multiples of 3 and 5</title><link href="https://fractalleaf.github.io/project-euler-problem-1.html" rel="alternate"></link><published>2018-07-03T00:00:00+02:00</published><updated>2018-08-08T11:03:00+02:00</updated><author><name>Søren</name></author><id>tag:fractalleaf.github.io,2018-07-03:/project-euler-problem-1.html</id><summary type="html">&lt;p&gt;Solution for the first Project Euler problem about calculating the sum of integers divisible by 3 and&amp;nbsp;5.&lt;/p&gt;</summary><content type="html">&lt;h2&gt;Description&lt;/h2&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Digital Ramblings - Project Euler</title><link href="https://fractalleaf.github.io/" rel="alternate"></link><link href="https://fractalleaf.github.io/feeds/project-euler.atom.xml" rel="self"></link><id>https://fractalleaf.github.io/</id><updated>2018-08-08T11:03:00+02:00</updated><entry><title>Project Euler problem 1 - Multiples of 3 and 5</title><link href="https://fractalleaf.github.io/project-euler-problem-1.html" rel="alternate"></link><published>2018-07-03T00:00:00+02:00</published><updated>2018-08-08T11:03:00+02:00</updated><author><name>Søren</name></author><id>tag:fractalleaf.github.io,2018-07-03:/project-euler-problem-1.html</id><summary type="html">&lt;p&gt;Solution for the first Project Euler problem about calculating the sum of integers divisible by 3 and&amp;nbsp;5.&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://projecteuler.net/problem=1"&gt;Link to problem on Project Euler&amp;nbsp;homepage&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/fractalleaf/project-euler/tree/master/p001"&gt;Link to Github&amp;nbsp;repository&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;Description&lt;/h2&gt;
 &lt;p&gt;If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is&amp;nbsp;23.&lt;/p&gt;
 &lt;p&gt;Find the sum of all the multiples of 3 or 5 below&amp;nbsp;1000.&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://projecteuler.net/problem=1"&gt;Link to&amp;nbsp;problem&lt;/a&gt;&lt;/p&gt;
 &lt;h2&gt;Brute force&amp;nbsp;solution&lt;/h2&gt;
 &lt;p&gt;A brute force solution to the problem can be obtained by simply looping over every integer below 1000 and checking if it is divisible by either 3 or&amp;nbsp;5.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;p001&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
@@ -21,10 +22,9 @@
 
 
 &lt;h2&gt;Clever&amp;nbsp;solution&lt;/h2&gt;
-&lt;p&gt;The sum of all integers smaller than N divisible by n may be written&amp;nbsp;as
-&lt;/p&gt;
+&lt;p&gt;The sum of all integers smaller than N, divisible by n, may be written&amp;nbsp;as&lt;/p&gt;
 &lt;div class="math"&gt;$$f(n, N) = n \times \sum_{i=1}^{\lfloor N/n \rfloor} i = n \times \frac{\lfloor N/n \rfloor (\lfloor N/n \rfloor + 1)}{2}$$&lt;/div&gt;
-&lt;p&gt;The solution to the problem is therefore given by &lt;span class="math"&gt;\(f(3, 999) + f(5, 999) - f(15, 999)\)&lt;/span&gt; where the last term is subtracted to take care of the doulbe counting of those integers that are divisible by both 3 and&amp;nbsp;5.&lt;/p&gt;
+&lt;p&gt;The solution to the problem is therefore given by &lt;span class="math"&gt;\(f(3, 999) + f(5, 999) - f(15, 999)\)&lt;/span&gt; where the last term is subtracted to take care of the double counting of those integers that are divisible by both 3 and&amp;nbsp;5.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;sumDiv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;N&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
     &lt;span class="n"&gt;p&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;N&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;
     &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;
@@ -40,7 +40,7 @@
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;The clever solution is faster by the brute force solution by more than a factor&amp;nbsp;100.&lt;/p&gt;
+&lt;p&gt;The clever solution outperforms the brute force solution by more than a factor&amp;nbsp;100.&lt;/p&gt;
 &lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
     var align = "center",
         indent = "0em",
