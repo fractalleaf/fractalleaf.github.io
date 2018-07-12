@@ -10,7 +10,7 @@ Image: /Puzzles/images/scott_distinct_solutions1.svg
 
 [Link to GitHub repository](https://github.com/fractalleaf/exact-cover)
 
-In my previous [post]({filename}/Algorithms/dlx.md), I introduced exact cover problems, and described Knuth's DLX algorithm for solving such problems. In this notebook, I use the DLX algorithm to solve a famous exact cover problem: [Scott's Pentomino problem]({filename}/pdf/ScottCombiPuz.pdf).
+In my previous [post]({filename}/Algorithms/dlx.md), I introduced exact cover problems, and described Knuth's DLX algorithm for solving such problems. In this post, I use the DLX algorithm to solve a famous exact cover problem: [Scott's Pentomino problem]({filename}/pdf/ScottCombiPuz.pdf).
 
 ## Problem statement
 Scott's pentomino problem can be stated as follows:
