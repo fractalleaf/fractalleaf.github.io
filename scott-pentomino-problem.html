@@ -1,0 +1,970 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="" />
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="https://fractalleaf.github.io/theme/stylesheet/style.min.css">
+
+  <link rel="stylesheet" type="text/css" href="https://fractalleaf.github.io/theme/pygments/native.min.css">
+  <link rel="stylesheet" type="text/css" href="https://fractalleaf.github.io/theme/font-awesome/css/font-awesome.min.css">
+
+
+    <link href="https://fractalleaf.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Digital Ramblings Atom">
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-122111225-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
+<meta name="author" content="Søren" />
+<meta name="description" content="Solving a famous pentomino puzzle using Knuth’s DLX algorithm." />
+<meta name="keywords" content="dlx, exact cover, pentomino, python">
+
+<meta property="og:site_name" content="Digital Ramblings"/>
+<meta property="og:title" content="Solving Scott’s pentomino problem with DLX"/>
+<meta property="og:description" content="Solving a famous pentomino puzzle using Knuth’s DLX algorithm."/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="https://fractalleaf.github.io/scott-pentomino-problem.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2018-07-12 11:00:00+02:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="https://fractalleaf.github.io/author/soren.html">
+<meta property="article:section" content="Puzzles"/>
+<meta property="article:tag" content="dlx"/>
+<meta property="article:tag" content="exact cover"/>
+<meta property="article:tag" content="pentomino"/>
+<meta property="article:tag" content="python"/>
+<meta property="og:image" content="">
+
+  <title>Digital Ramblings &ndash; Solving Scott’s pentomino problem with DLX</title>
+
+</head>
+<body>
+  <aside>
+    <div>
+      <a href="https://fractalleaf.github.io">
+        <img src="https://fractalleaf.github.io/theme/img/profile.png" alt="Digital Ramblings" title="Digital Ramblings">
+      </a>
+      <h1><a href="https://fractalleaf.github.io">Digital Ramblings</a></h1>
+
+<p>Post Hoc, Ergo Propter Hoc</p>
+      <nav>
+        <ul class="list">
+          <li><a href="https://fractalleaf.github.io/pages/about.html#about">About</a></li>
+
+        </ul>
+      </nav>
+
+      <ul class="social">
+        <li><a class="sc-linkedin" href="https://www.linkedin.com/in/sfrimann/" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+        <li><a class="sc-github" href="https://github.com/fractalleaf" target="_blank"><i class="fa fa-github"></i></a></li>
+      </ul>
+    </div>
+
+
+  </aside>
+  <main>
+
+    <nav>
+      <a href="https://fractalleaf.github.io">    Home
+</a>
+
+      <a href="/archives.html">Archives</a>
+      <a href="/categories.html">Categories</a>
+      <a href="/tags.html">Tags</a>
+
+      <a href="https://fractalleaf.github.io/feeds/all.atom.xml">    Atom
+</a>
+
+    </nav>
+
+<article class="single">
+  <header>
+      
+    <h1 id="scott-pentomino-problem">Solving Scott&#8217;s pentomino problem with <span class="caps">DLX</span></h1>
+    <p>
+          Posted on Thu 12 July 2018 in <a href="https://fractalleaf.github.io/category/puzzles.html">Puzzles</a>
+
+
+    </p>
+  </header>
+
+
+  <div>
+    <p><a href="https://github.com/fractalleaf/exact-cover">Link to GitHub&nbsp;repository</a></p>
+<p>In my previous <a href="https://fractalleaf.github.io/dlx.html">post</a>, I introduced exact cover problems, and described Knuth&#8217;s <span class="caps">DLX</span> algorithm for solving such problems. In this notebook, I use the <span class="caps">DLX</span> algorithm to solve a famous exact cover problem: <a href="https://fractalleaf.github.io/pdf/ScottCombiPuz.pdf">Scott&#8217;s Pentomino problem</a>.</p>
+<h2>Problem&nbsp;statement</h2>
+<p>Scott&#8217;s pentomino problem can be stated as&nbsp;follows:</p>
+<blockquote>
+<p>Consider a 8x8 square with a 2x2 hole in the centre. Cover each tile with one of the 12 free <a href="https://en.wikipedia.org/wiki/Pentomino">pentominoes</a> in such a way that no pentominoes overlap, and each pentomino is used only&nbsp;once.</p>
+</blockquote>
+<p>One of the many solutions to the problem is shown&nbsp;below</p>
+<figure align="middle">
+  <img src="https://fractalleaf.github.io/Puzzles/images/dlx_scott_pentomino.svg" title="pentomino solution">
+  <figcaption>Scott&#8217;s pentomino problem&#8221;. A 8x8 grid with a 2x2 hole in centre, with each pentomino being used once.</figcaption>
+</figure>
+
+<h2>Background</h2>
+<p>Scott&#8217;s pentomino problem is named after <a href="https://en.wikipedia.org/wiki/Dana_Scott">Dana Scott</a> and is famous, not because Scott was the first to solve the problem, but because it was one of the first experiments with solving such a problem algorithmically. The problem was chosen because it was known to have a lot of solutions, but relatively few possibilities of placing the pieces on the grid, thus making the problem computationally&nbsp;feasible.</p>
+<p>The experiment was run in 1958 on the <a href="https://en.wikipedia.org/wiki/MANIAC_I"><span class="caps">MANIAC</span> I</a> computer at Princeton, where Scott was a graduate student. In the <a href="https://fractalleaf.github.io/pdf/ScottCombiPuz.pdf">technical report</a>, where Scott published the results, he remarked that he was very pleased&nbsp;that</p>
+<blockquote>
+<p>The whole problem required only about three and one-half&nbsp;hours.</p>
+</blockquote>
+<h2>Pentominoes</h2>
+<p>A pentomino is a polygon constructed by five squares connected edge-to-edge. The pentominoes are a subset of the polyminoes: An Nth order polymino are polygons constructed by connecting N squares edge-to-edge, making pentominoes are 5th order polyminoes. Other well known polyminoes are tetrominoes (tetris blocks), which are 4th order polyminoes, and dominoes which are 2nd order&nbsp;polyminoes.</p>
+<figure align="middle">
+  <img src="https://fractalleaf.github.io/Puzzles/images/pentomino_types.svg" title="free pentominoes">
+  <figcaption>The 12 free pentominoes named according to the convention given by Golomb.</figcaption>
+</figure>
+
+<p>Ignoring reflections and rotations, there are 12 &#8220;free&#8221; pentominoes, which are shown above along with the customary name of each pentomino. It is customary to name the pentominoes after the letter in the alphabeth they resemble the&nbsp;most.</p>
+<h2>Placing pentominoes on the&nbsp;grid</h2>
+<p>To solve the pentomino problem using the <span class="caps">DLX</span> algorithm we need to record all valid pentomino positions on the grid. To help with this task, I have created two python&nbsp;classes:</p>
+<ul>
+<li>The <code>Polymino</code> class takes the polymino name and coordinates as input, and defines methods for manipulating the pentomino position and&nbsp;orientation.</li>
+<li>The <code>Grid</code> class defines a grid (possibly with holes) on which Polyminoes can be placed. The Grid class checks if each polymino placement in&nbsp;valid.</li>
+</ul>
+<p>The first step is to create 12 instanes of the <code>Polymino</code> class. One for each of the free pentominoes. I have made a convenience function, <code>generate_polyminoes</code>, which takes ascii drawings of the polyminoes and generates the <code>Polymino</code> instances from&nbsp;those.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">polymino</span> <span class="kn">import</span> <span class="n">Polymino</span>
+
+<span class="k">def</span> <span class="nf">generate_polyminoes</span><span class="p">(</span><span class="n">ascii_drawing</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate polymino coordinates from ascii drawing</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ascii_drawing (str): An ascii drawing of the polyminoes to be</span>
+<span class="sd">        generated. Polyminoes must be drawn using ascii characters, where the</span>
+<span class="sd">        polymino gets named after the ascii character.</span>
+
+<span class="sd">    Yields:</span>
+<span class="sd">        List of Polymino class instances.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># get coordinates for each polymino in the ascii drawing</span>
+    <span class="n">polydic</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ascii_drawing</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39; &#39;</span><span class="p">:</span>
+                <span class="n">polydic</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
+
+    <span class="c1"># yield Polymino objects with each polymino shifted to (0, 0)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">polydic</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+        <span class="n">polymino</span> <span class="o">=</span> <span class="n">Polymino</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">polydic</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="n">polymino</span><span class="o">.</span><span class="n">absolute_shift</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">polymino</span>
+
+<span class="c1"># Ascii drawing of the 12 free pentominoes</span>
+<span class="n">PENTOMINOES</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    I</span>
+<span class="s2">    I  L   N                         Y</span>
+<span class="s2"> FF I  L   N PP TTT       V   W  X  YY ZZ</span>
+<span class="s2">FF  I  L  NN PP  T  U U   V  WW XXX  Y  Z</span>
+<span class="s2"> F  I  LL N  P   T  UUU VVV WW   X   Y  ZZ</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">pentominoes</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">pentomino</span> <span class="ow">in</span> <span class="n">generate_polyminoes</span><span class="p">(</span><span class="n">PENTOMINOES</span><span class="p">):</span>
+    <span class="n">pentominoes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pentomino</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Number of free pentominoes = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pentominoes</span><span class="p">)))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Number of free pentominoes = 12
+</pre></div>
+
+
+<p>The second step is to generate all &#8220;fixed&#8221; pentominoes by flipping and rotating the pentominoes. The number of distinct orientations for each pentomino vary between 1 to 8 depending on the symmetries of the&nbsp;piece.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="k">def</span> <span class="nf">generate_polymino_orientations</span><span class="p">(</span><span class="n">polyminoes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate all orientations (flips and rotations) of a polymino.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        polyminoes: List of polyminoes to generate orientations of.</span>
+
+<span class="sd">    Yields:</span>
+<span class="sd">        Polymino instance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">polyminoes</span> <span class="o">=</span> <span class="p">[</span><span class="n">polyminoes</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">polyminoes</span><span class="p">,</span> <span class="n">Polymino</span><span class="p">)</span> <span class="k">else</span> <span class="n">polyminoes</span>
+
+    <span class="k">for</span> <span class="n">polymino</span> <span class="ow">in</span> <span class="n">polyminoes</span><span class="p">:</span>
+
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">polymino</span><span class="p">)</span>
+            <span class="n">polymino</span><span class="o">.</span><span class="n">rotate</span><span class="p">()</span>
+
+        <span class="n">polymino</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">polymino</span><span class="p">)</span>
+            <span class="n">polymino</span><span class="o">.</span><span class="n">rotate</span><span class="p">()</span>
+
+<span class="n">orientations</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">count</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">pentomino</span> <span class="ow">in</span> <span class="n">generate_polymino_orientations</span><span class="p">(</span><span class="n">pentominoes</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">pentomino</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">orientations</span><span class="p">:</span> <span class="c1"># only include unique orientations</span>
+        <span class="n">orientations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pentomino</span><span class="p">)</span>
+        <span class="n">count</span><span class="p">[</span><span class="n">pentomino</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">cnt</span> <span class="ow">in</span> <span class="n">count</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;{} pentomino has {} distinct flips/rotations&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">cnt</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Total number of distinct pentomino orientations = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">orientations</span><span class="p">)))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>F pentomino has 8 distinct flips/rotations
+I pentomino has 2 distinct flips/rotations
+L pentomino has 8 distinct flips/rotations
+N pentomino has 8 distinct flips/rotations
+P pentomino has 8 distinct flips/rotations
+T pentomino has 4 distinct flips/rotations
+U pentomino has 4 distinct flips/rotations
+V pentomino has 4 distinct flips/rotations
+W pentomino has 4 distinct flips/rotations
+X pentomino has 1 distinct flips/rotations
+Y pentomino has 8 distinct flips/rotations
+Z pentomino has 4 distinct flips/rotations
+Total number of distinct pentomino orientations = 63
+</pre></div>
+
+
+<p>Finally, each fixed pentomino is placed at all valid positions on the&nbsp;grid.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">polymino</span> <span class="kn">import</span> <span class="n">Grid</span>
+
+<span class="k">def</span> <span class="nf">generate_polymino_positions</span><span class="p">(</span><span class="n">polyminoes</span><span class="p">,</span> <span class="n">grid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Place polyminoes on all valid positions in the grid</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        polyminoes: List of polyminoes to place on grid</span>
+<span class="sd">        grid: Grid instance.</span>
+
+<span class="sd">    Yields:</span>
+<span class="sd">        Polymino instance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">polyminoes</span> <span class="o">=</span> <span class="p">[</span><span class="n">polyminoes</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">polyminoes</span><span class="p">,</span> <span class="n">Polymino</span><span class="p">)</span> <span class="k">else</span> <span class="n">polyminoes</span>
+
+    <span class="k">for</span> <span class="n">polymino</span> <span class="ow">in</span> <span class="n">polyminoes</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">min_i</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">min_i</span><span class="o">+</span><span class="n">grid</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">min_j</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">min_j</span><span class="o">+</span><span class="n">grid</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="n">polymino</span><span class="o">.</span><span class="n">absolute_shift</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">grid</span><span class="o">.</span><span class="n">valid_position</span><span class="p">(</span><span class="n">polymino</span><span class="p">):</span>
+                    <span class="k">yield</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">polymino</span><span class="p">)</span>
+
+<span class="c1"># create 8x8 grid with 2x2 hole in the middle</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">Grid</span><span class="p">((</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">holes</span><span class="o">=</span><span class="p">[(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)])</span>
+<span class="n">positions</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">pentomino</span> <span class="ow">in</span> <span class="n">generate_polymino_positions</span><span class="p">(</span><span class="n">orientations</span><span class="p">,</span> <span class="n">grid</span><span class="p">):</span>
+    <span class="n">positions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pentomino</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Total number of fixed pentomino positions on grid = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">)))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Total number of fixed pentomino positions on grid = 1568
+</pre></div>
+
+
+<h2>Solving the problem with <span class="caps">DLX</span></h2>
+<p>The result of placing the fixed pentominoes on the grid yields a collection of sets, that the <span class="caps">DLX</span> algorithm uses for finding exact cover&nbsp;solutions.</p>
+<p>The final steps before running the solver is to calculate a list of all the elements present in one or more of the sets in the collection. Each of these elements represent a constraint that must be satisfied once, and only once, by the solution. The problem at hand has two&nbsp;constraints:</p>
+<ul>
+<li>The grid points: A grid point has to be covered by a pentomino, but pentominoes cannot&nbsp;overlap.</li>
+<li>The pentomino names: Each pentomino has to be used once, and cannot be used after&nbsp;that.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="c1"># convert list of Polymino instances to list of lists (for input to DLX)</span>
+<span class="n">positions</span> <span class="o">=</span> <span class="p">[</span><span class="n">pentomino</span><span class="o">.</span><span class="n">aslist</span> <span class="k">for</span> <span class="n">pentomino</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">]</span>
+
+<span class="c1"># DLX also needs a set of labels (constraints) as input. Generate from the list of pentominoes</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">element</span> <span class="k">for</span> <span class="n">pentomino</span> <span class="ow">in</span> <span class="n">positions</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">pentomino</span><span class="p">]))</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">sortkey</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Finally, we are ready to run the <span class="caps">DLX</span>&nbsp;solver</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dlx</span> <span class="kn">import</span> <span class="n">DLX</span>
+
+<span class="c1"># sort key for sorted function</span>
+<span class="c1"># puts strings to the front of list, and coordinates after strings</span>
+<span class="k">def</span> <span class="nf">sortkey</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">x</span><span class="p">)</span>
+
+<span class="n">dlx</span> <span class="o">=</span> <span class="n">DLX</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">positions</span><span class="p">)</span>
+
+<span class="n">solutions</span> <span class="o">=</span> <span class="n">dlx</span><span class="o">.</span><span class="n">run_search</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">sortkey</span><span class="p">)</span>
+<span class="c1"># convert to Grid objects</span>
+<span class="n">solutions</span> <span class="o">=</span> <span class="p">[</span><span class="n">Grid</span><span class="o">.</span><span class="n">from_DLX</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span> <span class="k">for</span> <span class="n">solution</span> <span class="ow">in</span> <span class="n">solutions</span><span class="p">]</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Number of solutions found by DLX = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">solutions</span><span class="p">)))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Number of solutions found by DLX = 520
+</pre></div>
+
+
+<p><span class="caps">DLX</span> finds a total of 520 solutions, however, because the algorithm does not take rotations and reflections into account, each solution is replicated eight times with different orientations (see below). The number of distinct solutions is therefore equal to <span class="math">\(520/8 = 65\)</span>.</p>
+<figure align="middle">
+  <img src="https://fractalleaf.github.io/Puzzles/images/scott_pentomino_non_unique.svg" title="Non-distinct solutions">
+  <figcaption>Eight solutions of the pentomino problem that are all different orientations of the same solution.</figcaption>
+</figure>
+
+<p>It is easy to root out the non-distinct solutions. One simply generates all eight orientations of each solution, only including the solution if it is not already in the list of accepted&nbsp;solutions.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">generate_grid_orientations</span><span class="p">(</span><span class="n">grids</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate all orientations (flips and rotations) of a grid.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        grids: List of grids to generate orientations of.</span>
+
+<span class="sd">    Yields:</span>
+<span class="sd">        Grid instance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">grids</span> <span class="o">=</span> <span class="p">[</span><span class="n">grids</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">grids</span><span class="p">,</span> <span class="n">Grid</span><span class="p">)</span> <span class="k">else</span> <span class="n">grids</span>
+
+    <span class="k">for</span> <span class="n">grid</span> <span class="ow">in</span> <span class="n">grids</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+            <span class="n">grid</span><span class="o">.</span><span class="n">rotate</span><span class="p">()</span>
+
+        <span class="n">grid</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+            <span class="n">grid</span><span class="o">.</span><span class="n">rotate</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">unique_grids</span><span class="p">(</span><span class="n">grids</span><span class="p">):</span>
+
+    <span class="n">grids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">grids</span><span class="p">)</span>
+
+    <span class="n">unique</span> <span class="o">=</span> <span class="p">[</span><span class="n">grids</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+    <span class="k">for</span> <span class="n">grid</span> <span class="ow">in</span> <span class="n">grids</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">is_unique</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">for</span> <span class="n">orientation</span> <span class="ow">in</span> <span class="n">generate_grid_orientations</span><span class="p">(</span><span class="n">grid</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">orientation</span> <span class="ow">in</span> <span class="n">unique</span><span class="p">:</span>
+                <span class="n">is_unique</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="k">break</span>
+        <span class="k">if</span> <span class="n">is_unique</span><span class="p">:</span>
+            <span class="n">unique</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">unique</span>
+
+<span class="n">distinct</span> <span class="o">=</span> <span class="n">unique_grids</span><span class="p">(</span><span class="n">solutions</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Number of distinct solutions = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">distinct</span><span class="p">)))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Number of distinct solutions = 65
+</pre></div>
+
+
+<p>The 65 distinct solutions are shown&nbsp;below</p>
+<p><img alt="" src="https://fractalleaf.github.io/Puzzles/images/scott_distinct_solutions1.svg"></p>
+<h2>Optimising the&nbsp;algorithm</h2>
+<div class="highlight"><pre><span></span><span class="o">%</span><span class="n">timeit</span> <span class="n">dlx</span><span class="o">.</span><span class="n">run_search</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">sortkey</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Number of calls to recursive search function = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">dlx</span><span class="o">.</span><span class="n">kcount</span><span class="p">)))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>1min 31s ± 852 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+Number of calls to recursive search function = 293045
+</pre></div>
+
+
+<p>The algorithm runs in 1.5 minutes, and makes 293045 calls to the recursive search function. While the runtime is certainly better than the 3.5 hours achieved by Scott in 1958, it is far from&nbsp;optimal.</p>
+<p>The most obvious way to reduce the runtime would be to implement the algorithm in a compiled language or run it on a faster computer. However, none of these solutions would reduce the number of calls to the recursive search function, which is what drives the running&nbsp;time.</p>
+<p>Scott noticed that you can avoid generating a lot of the redundant solutions by restricting the placement of the X pentomino in such a way that none of the accepted placements can be flipped or rotated into one of the other placements. Doing this, there is in fact only three valid placements of the X&nbsp;pentomino:</p>
+<p><img alt="" src="https://fractalleaf.github.io/Puzzles/images/X.svg"></p>
+<p>Restricting the placement of the X piece reduces the branching of the search tree, and therefore also the number of calls to the recursive search&nbsp;function.</p>
+<p>Note, that restricting the placement of the X polymino to the three shown positions does not remove all symmetries as the rightmost placement retains one axis of symmetry with the diagonal. Although it is possible to remove this ambiguity by restricting the placement of one additional pentomino, I will ignore this here, and simply remove all non-distinct solutions after running the solver&nbsp;anew.</p>
+<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;Number of valid positions before removing X pieces = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">)))</span>
+
+<span class="c1"># remove X pieces from position except those with the desired coordinates</span>
+<span class="n">positions</span> <span class="o">=</span> <span class="p">[</span><span class="n">pos</span> <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">positions</span> <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;X&#39;</span> <span class="ow">and</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)])]</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Number of valid positions after removing X pieces = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">)))</span>
+
+<span class="c1"># run DLX algorithm again</span>
+<span class="n">dlx</span> <span class="o">=</span> <span class="n">DLX</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">positions</span><span class="p">)</span>
+
+<span class="n">solutions</span> <span class="o">=</span> <span class="n">dlx</span><span class="o">.</span><span class="n">run_search</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">sortkey</span><span class="p">)</span>
+<span class="c1"># convert to Grid objects</span>
+<span class="n">solutions</span> <span class="o">=</span> <span class="p">[</span><span class="n">Grid</span><span class="o">.</span><span class="n">from_DLX</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span> <span class="k">for</span> <span class="n">solution</span> <span class="ow">in</span> <span class="n">solutions</span><span class="p">]</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Number of solutions found by DLX with X pieces removed = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">solutions</span><span class="p">)))</span>
+
+<span class="c1">#remove non-distinct solutions</span>
+<span class="n">distinct</span> <span class="o">=</span> <span class="n">unique_grids</span><span class="p">(</span><span class="n">solutions</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Number of distinct solutions found by DLX with X pieces removed = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">distinct</span><span class="p">)))</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="o">%</span><span class="n">timeit</span> <span class="n">dlx</span><span class="o">.</span><span class="n">run_search</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">sortkey</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Number of calls to recursive search function = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">dlx</span><span class="o">.</span><span class="n">kcount</span><span class="p">)))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Number of valid positions before removing X pieces = 1568
+Number of valid positions after removing X pieces = 1547
+
+Number of solutions found by DLX with X pieces removed = 91
+Number of distinct solutions found by DLX with X pieces removed = 65
+
+15.5 s ± 320 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+Number of calls to recursive search function = 49874
+</pre></div>
+
+
+<p>Restricting the positioning of the X pentominoes reduces both the runtime and the number of recusive calls by a factor of&nbsp;six.</p>
+<h2>Code for Polymino and Grid&nbsp;classes</h2>
+<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Polymino</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Polymino piece</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        coord (list of tuples): Polymino coordinates.</span>
+<span class="sd">        name (Str): Name of the polymino piece.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">coord</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;init method</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (Str): Name of the polymino piece.</span>
+<span class="sd">            coord (list of tuples): Polymino coordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coord</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">coord</span><span class="p">)</span>
+        <span class="c1"># get boundaries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_j</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">min</span><span class="p">,</span> <span class="o">*</span><span class="n">coord</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_j</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">max</span><span class="p">,</span> <span class="o">*</span><span class="n">coord</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_list</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lst</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Polymino ame and coordinates from list</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lst (list): List with polymino coordinates, and name</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Polymino instance</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If name and/or coordinates missing from list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">coord</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="n">coord</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">i</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">coord</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No coordinates in list&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No name in list&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">coord</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">limit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get boundaries</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of boundaries</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">min_i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_j</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_j</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get size of polymino</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of size in i and j coordinate.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">max_i</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">min_i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_j</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">min_j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">aslist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert Polymino instance to list</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List with polymino name and coordinates</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord</span>
+
+    <span class="k">def</span> <span class="nf">relative_shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta_i</span><span class="p">,</span> <span class="n">delta_j</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Shift the coordinates of the Polymino relative to its current</span>
+<span class="sd">        position.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            delta_i (int): Shift of i coordinate</span>
+<span class="sd">            delta_j (int): Shift of j coordinate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_i</span> <span class="o">+=</span> <span class="n">delta_i</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_i</span> <span class="o">+=</span> <span class="n">delta_i</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_j</span> <span class="o">+=</span> <span class="n">delta_j</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_j</span> <span class="o">+=</span> <span class="n">delta_j</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">coord</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="o">+</span><span class="n">delta_i</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="n">delta_j</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">absolute_shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_0</span><span class="p">,</span> <span class="n">j_0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Shift the coordinates of the Polymino to an absolute position.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            i_0 (int): i coordinate value of the upper left corner.</span>
+<span class="sd">            j_0 (int): j coordinate velue of the upper left corner.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coord</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">min_i</span><span class="o">+</span><span class="n">i_0</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">min_j</span><span class="o">+</span><span class="n">j_0</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_i</span> <span class="o">+=</span> <span class="n">i_0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_i</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_j</span> <span class="o">+=</span> <span class="n">j_0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_j</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_i</span> <span class="o">=</span> <span class="n">i_0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_j</span> <span class="o">=</span> <span class="n">j_0</span>
+
+    <span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ftype</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Flip the polymino around the vertical or horizontal axes.</span>
+
+<span class="sd">        The flips are always relative to the origin (0, 0).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ftype (str, optional): Flip around vertical or horizontal axis.</span>
+<span class="sd">            (Default: vertical)</span>
+<span class="sd">            reset (bool, optional): Reset the coordinates of the upper left</span>
+<span class="sd">            corner to the original value after the flip (Default: True).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If ftype is not &#39;vertical&#39; or &#39;horizontal&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">old_min_i</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">old_min_j</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span>
+
+        <span class="k">if</span> <span class="n">ftype</span> <span class="o">==</span> <span class="s1">&#39;vertical&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coord</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([(</span><span class="n">i</span><span class="p">,</span> <span class="o">-</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">min_j</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_j</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">max_j</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">min_j</span>
+        <span class="k">elif</span> <span class="n">ftype</span> <span class="o">==</span> <span class="s1">&#39;horizontal&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coord</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([(</span><span class="o">-</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">min_i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_i</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">max_i</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">min_i</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ftype must be either horizontal or vertical&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">absolute_shift</span><span class="p">(</span><span class="n">old_min_i</span><span class="p">,</span> <span class="n">old_min_j</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Rotate Polymino 90 degree counter clockvise around (0, 0)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            reset (bool, optional): Reset the coordinates of the upper left</span>
+<span class="sd">            corner to the original value after the flip (Default: True).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">old_min_i</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">old_min_j</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">coord</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([(</span><span class="o">-</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_j</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_j</span> <span class="o">=</span> \
+        <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">max_j</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">min_j</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_i</span>
+
+        <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">absolute_shift</span><span class="p">(</span><span class="n">old_min_i</span><span class="p">,</span> <span class="n">old_min_j</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">ascii</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">empty</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Print an ascii drawing of the polymino.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            empty (str, optional): Ascii character to use for holes in the grid.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span>
+
+        <span class="n">grid</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">height</span><span class="p">):</span>
+            <span class="n">grid</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">empty</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">width</span><span class="p">)])</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord</span><span class="p">:</span>
+            <span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">min_i</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">min_j</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">grid</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ascii</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aslist</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Polymino</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">coord</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+<span class="k">class</span> <span class="nc">Grid</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Grid on which to place polyminoes</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        coord (list of tuples): Grid coordinates.</span>
+<span class="sd">        polyminoes (List of Polymino objects): Polyminoes on the grid.</span>
+<span class="sd">        size (tuple): Size of the grid</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">i_0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">polyminoes</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">holes</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;init method</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            size (tuple): Size of grid (n_i, n_j).</span>
+<span class="sd">            i_0 (int, optional): i coordinate value at upper left corner</span>
+<span class="sd">            j_0 (int, optional): j coordinate value at upper left corner</span>
+<span class="sd">            polyminoes (None, optional): Polyminoes on the grid</span>
+<span class="sd">            holes (None, optional): Coordinates of &quot;holes&quot; in the grid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_i</span><span class="p">,</span> <span class="n">n_j</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="n">holes</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">holes</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">holes</span>
+        <span class="n">polyminoes</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">polyminoes</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">polyminoes</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coord</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">polyminoes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_i</span> <span class="o">=</span> <span class="n">i_0</span><span class="p">,</span> <span class="n">i_0</span><span class="o">+</span><span class="n">n_i</span><span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_j</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_j</span> <span class="o">=</span> <span class="n">j_0</span><span class="p">,</span> <span class="n">j_0</span><span class="o">+</span><span class="n">n_j</span><span class="o">-</span><span class="mi">1</span>
+
+        <span class="c1"># build self.grid with (i, j) coordinates for each gridpoint</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_i</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_j</span><span class="p">):</span>
+                <span class="c1"># only include the grid point if not part of a &quot;hole&quot;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">holes</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">coord</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
+
+        <span class="c1"># check that all polyminoes are in a valid position</span>
+        <span class="k">for</span> <span class="n">polymino</span> <span class="ow">in</span> <span class="n">polyminoes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">polymino</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_DLX</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">solution</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate grid from DLX solution</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            solution: solution as returned from the DLX class</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Instance of Grid class</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">polyminoes</span> <span class="o">=</span> <span class="p">[</span><span class="n">Polymino</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span><span class="n">polymino</span><span class="p">)</span> <span class="k">for</span> <span class="n">polymino</span> <span class="ow">in</span> <span class="n">solution</span><span class="p">]</span>
+
+        <span class="c1"># get boundaries for the grid</span>
+        <span class="n">min_i</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">polymino</span><span class="o">.</span><span class="n">min_i</span> <span class="k">for</span> <span class="n">polymino</span> <span class="ow">in</span> <span class="n">polyminoes</span><span class="p">])</span>
+        <span class="n">max_i</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">polymino</span><span class="o">.</span><span class="n">max_i</span> <span class="k">for</span> <span class="n">polymino</span> <span class="ow">in</span> <span class="n">polyminoes</span><span class="p">])</span>
+        <span class="n">min_j</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">polymino</span><span class="o">.</span><span class="n">min_j</span> <span class="k">for</span> <span class="n">polymino</span> <span class="ow">in</span> <span class="n">polyminoes</span><span class="p">])</span>
+        <span class="n">max_j</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">polymino</span><span class="o">.</span><span class="n">max_j</span> <span class="k">for</span> <span class="n">polymino</span> <span class="ow">in</span> <span class="n">polyminoes</span><span class="p">])</span>
+
+        <span class="c1"># size of the grid from boundaries</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_i</span><span class="o">-</span><span class="n">min_i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_j</span><span class="o">-</span><span class="n">min_j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Holes in the grid. Assumed to be grid points within the boundary,</span>
+        <span class="c1"># not coevered by a polymino</span>
+        <span class="n">holes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">min_i</span><span class="p">,</span> <span class="n">max_i</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">min_j</span><span class="p">,</span> <span class="n">max_j</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">holes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
+
+        <span class="n">holes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">holes</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">polymino</span> <span class="ow">in</span> <span class="n">polyminoes</span><span class="p">:</span>
+            <span class="n">holes</span> <span class="o">=</span> <span class="n">holes</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">polymino</span><span class="o">.</span><span class="n">coord</span><span class="p">)</span>
+
+        <span class="n">holes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">holes</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">min_i</span><span class="p">,</span> <span class="n">min_j</span><span class="p">,</span> <span class="n">polyminoes</span><span class="p">,</span> <span class="n">holes</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">limit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get boundaries</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of boundaries</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">min_i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_j</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_j</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">valid_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polymino</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test to see if a polymino is in a valid position.</span>
+
+<span class="sd">        A valid position is on the grid, and without overlapping any other</span>
+<span class="sd">        polymino</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            polymino: Polymino instance.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">set_polymino</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">polymino</span><span class="o">.</span><span class="n">coord</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">poly</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">polyminoes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">set_polymino</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">poly</span><span class="o">.</span><span class="n">coord</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="k">if</span> <span class="n">set_polymino</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coord</span><span class="p">)</span> <span class="o">!=</span> <span class="n">set_polymino</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polymino</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a polymino to the grid.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            polymino: Polymino instance.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If a polymino is outside the grid or covers another</span>
+<span class="sd">            polymino.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_position</span><span class="p">(</span><span class="n">polymino</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">polyminoes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">polymino</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Polymino not in a valid grid position&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">relative_shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta_i</span><span class="p">,</span> <span class="n">delta_j</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Shift the coordinates of the Grid relative to its current position.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            delta_i (int): Shift of i coordinate</span>
+<span class="sd">            delta_j (int): Shift of j coordinate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_i</span> <span class="o">+=</span> <span class="n">delta_i</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_i</span> <span class="o">+=</span> <span class="n">delta_i</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_j</span> <span class="o">+=</span> <span class="n">delta_j</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_j</span> <span class="o">+=</span> <span class="n">delta_j</span>
+
+        <span class="n">_</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">relative_shift</span><span class="p">(</span><span class="n">delta_i</span><span class="p">,</span> <span class="n">delta_j</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">polyminoes</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">absolute_shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_0</span><span class="p">,</span> <span class="n">j_0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Shift the coordinates of the Grid to an absolute position.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            i_0 (int): i coordinate value of the upper left corner.</span>
+<span class="sd">            j_0 (int): j coordinate velue of the upper left corner.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">delta_i</span><span class="p">,</span> <span class="n">delta_j</span> <span class="o">=</span> <span class="n">i_0</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">min_i</span><span class="p">,</span> <span class="n">j_0</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">min_j</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">relative_shift</span><span class="p">(</span><span class="n">delta_i</span><span class="p">,</span> <span class="n">delta_j</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ftype</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Flip the Grid around the vertical or horizontal axes.</span>
+
+<span class="sd">        The flips are always relative to the origin (0, 0).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ftype (str, optional): Flip around vertical or horizontal axis.</span>
+<span class="sd">            (Default: vertical)</span>
+<span class="sd">            reset (bool, optional): Reset the coordinates of the upper left</span>
+<span class="sd">            corner to the original value after the flip (Default: True).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If ftype is not &#39;vertical&#39; or &#39;horizontal&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">old_min_i</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">old_min_j</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span>
+
+        <span class="k">if</span> <span class="n">ftype</span> <span class="o">==</span> <span class="s1">&#39;vertical&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">min_j</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_j</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">max_j</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">min_j</span>
+        <span class="k">elif</span> <span class="n">ftype</span> <span class="o">==</span> <span class="s1">&#39;horizontal&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">min_i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_i</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">max_i</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">min_i</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ftype must be either horizontal or vertical&quot;</span><span class="p">)</span>
+
+        <span class="n">_</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">ftype</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">polyminoes</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">absolute_shift</span><span class="p">(</span><span class="n">old_min_i</span><span class="p">,</span> <span class="n">old_min_j</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Rotate Grid 90 degree counter clockvise around (0, 0)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            reset (bool, optional): Reset the coordinates of the upper left</span>
+<span class="sd">            corner to the original value after the flip (Default: True).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">old_min_i</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">old_min_j</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span>
+
+        <span class="n">_</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">reset</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">polyminoes</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_j</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_j</span> <span class="o">=</span> \
+        <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">max_j</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">min_j</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_i</span>
+
+        <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">absolute_shift</span><span class="p">(</span><span class="n">old_min_i</span><span class="p">,</span> <span class="n">old_min_j</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">ascii</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">empty</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">gridpoint</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Print an ascii drawing of the grid with the polyminoes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            empty (str, optional): Ascii character to use for holes in the grid.</span>
+<span class="sd">            gridpoint (str, optional): Ascii character to use for grid points</span>
+<span class="sd">            not covered by a polymino.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span>
+
+        <span class="n">grid</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">height</span><span class="p">):</span>
+            <span class="n">grid</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">empty</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">width</span><span class="p">)])</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord</span><span class="p">:</span>
+            <span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">min_i</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">min_j</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridpoint</span>
+
+        <span class="k">for</span> <span class="n">polymino</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">polyminoes</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">polymino</span><span class="o">.</span><span class="n">coord</span><span class="p">:</span>
+                <span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">min_i</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">min_j</span><span class="p">]</span> <span class="o">=</span> <span class="n">polymino</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">grid</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ascii</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Grid</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">coord</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">for</span> <span class="n">polymino</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">polyminoes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">polymino</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">polyminoes</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">True</span>
+</pre></div>
+
+
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="https://fractalleaf.github.io/tag/dlx.html">dlx</a>
+      <a href="https://fractalleaf.github.io/tag/exact-cover.html">exact cover</a>
+      <a href="https://fractalleaf.github.io/tag/pentomino.html">pentomino</a>
+      <a href="https://fractalleaf.github.io/tag/python.html">python</a>
+    </p>
+  </div>
+
+
+
+  <div class="related-posts">
+    <h4>    You might enjoy
+</h4>
+    <ul class="related-posts">
+      <li><a href="https://fractalleaf.github.io/dlx.html">Exact cover and Donald Knuth&#8217;s <span class="caps">DLX</span>&nbsp;algorithm</a></li>
+    </ul>
+  </div>
+
+
+</article>
+
+    <footer>
+<p>
+  &copy;  2018 - This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>
+</p>
+<p>    Powered by <a href="http://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="http://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a>
+</p><p>
+  <a rel="license"
+     href="http://creativecommons.org/licenses/by-sa/4.0/"
+     target="_blank">
+    <img alt="Creative Commons License"
+         title="Creative Commons License"
+         style="border-width:0"
+           src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png"
+         width="80"
+         height="15"/>
+  </a>
+</p>    </footer>
+  </main>
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Digital Ramblings ",
+  "url" : "https://fractalleaf.github.io",
+  "image": "",
+  "description": ""
+}
+</script>
+
+</body>
+</html>
