@@ -14,7 +14,7 @@ TYPOGRIFY = True
 
 # PATHS
 PATH = 'content' # path to content directory
-STATIC_PATHS = ['Algorithms/images']
+STATIC_PATHS = ['Algorithms/images', 'Puzzles/images', 'pdf']
 
 # LANGUAGE AND TIMEZONE
 TIMEZONE = 'Europe/Paris'
