@@ -3,7 +3,7 @@ Date: 2018-07-08 10:15
 Category: Algorithms
 Tags: exact cover, python, dlx
 Slug: dlx
-related_posts: 
+related_posts: scott-pentomino-problem
 Authors: Søren
 Summary: A Python implementation of Donald Knuth's DLX algorithm for solving exact cover problems.
 Image: /Algorithms/images/dlx_scott_pentomino.svg
