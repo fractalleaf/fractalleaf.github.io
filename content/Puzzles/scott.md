@@ -5,7 +5,7 @@ Tags: dlx, exact cover, pentomino, python
 Slug: scott-pentomino-problem
 related_posts: dlx
 Authors: Søren
-Summary: Solving a famous pentomino puzzle using Knuth's DLX algorithm.
+Summary: Solving a famous tiling puzzle using Knuth's DLX algorithm.
 Image: /Puzzles/images/scott_distinct_solutions1.svg
 
 [Link to GitHub repository](https://github.com/fractalleaf/exact-cover)
