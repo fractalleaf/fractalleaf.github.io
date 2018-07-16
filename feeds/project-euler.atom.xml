@@ -1,5 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Digital Ramblings - Project Euler</title><link href="https://fractalleaf.github.io/" rel="alternate"></link><link href="https://fractalleaf.github.io/feeds/project-euler.atom.xml" rel="self"></link><id>https://fractalleaf.github.io/</id><updated>2018-07-09T12:30:00+02:00</updated><entry><title>Project Euler problem 2 - Even Fibonacci numbers</title><link href="https://fractalleaf.github.io/project-euler-problem-2.html" rel="alternate"></link><published>2018-07-09T12:30:00+02:00</published><updated>2018-07-09T12:30:00+02:00</updated><author><name>Søren</name></author><id>tag:fractalleaf.github.io,2018-07-09:/project-euler-problem-2.html</id><summary type="html">&lt;p&gt;Solution to the second Project Euler problem. Calculating the sum of even Fibonacci&amp;nbsp;numbers.&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://projecteuler.net/problem=2"&gt;Link to problem on Project Euler&amp;nbsp;homepage&lt;/a&gt;&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Digital Ramblings - Project Euler</title><link href="https://fractalleaf.github.io/" rel="alternate"></link><link href="https://fractalleaf.github.io/feeds/project-euler.atom.xml" rel="self"></link><id>https://fractalleaf.github.io/</id><updated>2018-07-16T18:00:00+02:00</updated><entry><title>Project Euler problem 3 - Largest prime factor</title><link href="https://fractalleaf.github.io/project-euler-problem-3.html" rel="alternate"></link><published>2018-07-16T18:00:00+02:00</published><updated>2018-07-16T18:00:00+02:00</updated><author><name>Søren</name></author><id>tag:fractalleaf.github.io,2018-07-16:/project-euler-problem-3.html</id><summary type="html">&lt;p&gt;Solution to the third Project Euler problem. Finding the largest prime factor of an&amp;nbsp;integer.&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://projecteuler.net/problem=3"&gt;Link to problem on Project Euler&amp;nbsp;homepage&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/fractalleaf/project-euler/tree/master/p003"&gt;Link to Github&amp;nbsp;repository&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;Description&lt;/h2&gt;
+&lt;p&gt;The prime factors of 13195 are 5, 7, 13 and&amp;nbsp;29.&lt;/p&gt;
+&lt;p&gt;What is the largest prime factor of the number&amp;nbsp;600851475143?&lt;/p&gt;
+&lt;h2&gt;Solution&lt;/h2&gt;
+&lt;p&gt;The simplest algorithm for solving the problem is &lt;a href="https://en.wikipedia.org/wiki/Trial_division"&gt;trial division&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Trial division is an integer factorisation algorithm that finds all prime factors of an integer, &lt;span class="math"&gt;\(n\)&lt;/span&gt;, by finding divisors amongst smaller integers. A simple implementation of the algorithm (returning only the largest prime factor)&amp;nbsp;is&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;LOW_LIMIT&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;13195&lt;/span&gt;
+&lt;span class="n"&gt;HIGH_LIMIT&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;600851475143&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;p003&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;Find largest prime factor of n by trial division&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+    &lt;span class="n"&gt;factor&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;
+    &lt;span class="k"&gt;while&lt;/span&gt; &lt;span class="n"&gt;factor&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;=&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="n"&gt;factor&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;//=&lt;/span&gt; &lt;span class="n"&gt;factor&lt;/span&gt;
+        &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="n"&gt;factor&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;factor&lt;/span&gt;
+
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Result for n == {}: {}&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;LOW_LIMIT&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;p003&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;LOW_LIMIT&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;
+
+&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;timeit&lt;/span&gt; &lt;span class="n"&gt;p003&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;HIGH_LIMIT&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Result for n == 13195: 29
+649 µs ± 17.2 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The factors that divides &lt;code&gt;n&lt;/code&gt; in line 9 are always prime. This is because if the factor was composite its prime constituents would have been divided with &lt;code&gt;n&lt;/code&gt; in an earlier&amp;nbsp;iteration.&lt;/p&gt;
+&lt;h2&gt;Optimisation&lt;/h2&gt;
+&lt;p&gt;The trial division algorithm can be optimised in a couple of&amp;nbsp;ways.&lt;/p&gt;
+&lt;p&gt;First, any integer, &lt;span class="math"&gt;\(n\)&lt;/span&gt;, can have at most one prime factor larger than &lt;span class="math"&gt;\(\sqrt{n}\)&lt;/span&gt;, and it is therefore only necessary to test for trial factors up to &lt;span class="math"&gt;\(\sqrt{n}\)&lt;/span&gt;. Any remaining factor above &lt;span class="math"&gt;\(\sqrt{n}\)&lt;/span&gt; will be prime (since, it would have been previously divided out&amp;nbsp;otherwise).&lt;/p&gt;
+&lt;p&gt;Second, the only one even prime is 2. By dividing &lt;span class="math"&gt;\(n\)&lt;/span&gt; by 2 until it becomes odd, afterwards it is only necessary to test odd trial factors, halving the number of&amp;nbsp;iterations.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;p003&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;Find largest prime factor of n by trial division&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+    &lt;span class="n"&gt;factor&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;
+    &lt;span class="k"&gt;while&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="n"&gt;factor&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;//=&lt;/span&gt; &lt;span class="n"&gt;factor&lt;/span&gt;
+
+    &lt;span class="n"&gt;factor&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;
+    &lt;span class="k"&gt;while&lt;/span&gt; &lt;span class="n"&gt;factor&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;factor&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;=&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="n"&gt;factor&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;//=&lt;/span&gt; &lt;span class="n"&gt;factor&lt;/span&gt;
+        &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="n"&gt;factor&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;
+
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;
+
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Result for n == {}: {}&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;LOW_LIMIT&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;p003&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;LOW_LIMIT&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;
+
+&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;timeit&lt;/span&gt; &lt;span class="n"&gt;p003&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;HIGH_LIMIT&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Result for n == 13195: 29
+99 µs ± 2.35 µs per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;With these optimisations the runtime is improved by a factor of&amp;nbsp;six.&lt;/p&gt;
+&lt;h2&gt;Conclusions&lt;/h2&gt;
+&lt;p&gt;Trial division is not generally the best algorithm to use for prime factorisation, but in cases such as the one at hand where there are only small prime factors, it performs&amp;nbsp;well.&lt;/p&gt;
+&lt;p&gt;For prime factorisation of larger integers it can still be advantageous to use trial division to test for divisibility by small primes before switching over to a more specialised&amp;nbsp;algorithm.&lt;/p&gt;
+&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width &lt; 768) ? "left" : align;
+        indent = (screen.width &lt; 768) ? "0em" : indent;
+        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+&lt;/script&gt;</content><category term="prime numbers"></category><category term="project euler"></category><category term="python"></category><category term="trial division"></category></entry><entry><title>Project Euler problem 2 - Even Fibonacci numbers</title><link href="https://fractalleaf.github.io/project-euler-problem-2.html" rel="alternate"></link><published>2018-07-09T12:30:00+02:00</published><updated>2018-07-09T12:30:00+02:00</updated><author><name>Søren</name></author><id>tag:fractalleaf.github.io,2018-07-09:/project-euler-problem-2.html</id><summary type="html">&lt;p&gt;Solution to the second Project Euler problem. Calculating the sum of even Fibonacci&amp;nbsp;numbers.&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://projecteuler.net/problem=2"&gt;Link to problem on Project Euler&amp;nbsp;homepage&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://github.com/fractalleaf/project-euler/tree/master/p002"&gt;Link to Github&amp;nbsp;repository&lt;/a&gt;&lt;/p&gt;
 &lt;h2&gt;Description&lt;/h2&gt;
 &lt;p&gt;Each new term in the Fibonacci sequence is generated by adding the previous two terms. By starting with 1 and 2, the first 10 terms will&amp;nbsp;be:&lt;/p&gt;

@@ -1,0 +1,283 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="" />
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="https://fractalleaf.github.io/theme/stylesheet/style.min.css">
+
+  <link rel="stylesheet" type="text/css" href="https://fractalleaf.github.io/theme/pygments/native.min.css">
+  <link rel="stylesheet" type="text/css" href="https://fractalleaf.github.io/theme/font-awesome/css/font-awesome.min.css">
+
+
+    <link href="https://fractalleaf.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Digital Ramblings Atom">
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-122111225-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
+<meta name="author" content="Søren" />
+<meta name="description" content="Solution to the third Project Euler problem. Finding the largest prime factor of an integer." />
+<meta name="keywords" content="prime numbers, project euler, python, trial division">
+
+<meta property="og:site_name" content="Digital Ramblings"/>
+<meta property="og:title" content="Project Euler problem 3 - Largest prime factor"/>
+<meta property="og:description" content="Solution to the third Project Euler problem. Finding the largest prime factor of an integer."/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="https://fractalleaf.github.io/project-euler-problem-3.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2018-07-16 18:00:00+02:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="https://fractalleaf.github.io/author/soren.html">
+<meta property="article:section" content="Project Euler"/>
+<meta property="article:tag" content="prime numbers"/>
+<meta property="article:tag" content="project euler"/>
+<meta property="article:tag" content="python"/>
+<meta property="article:tag" content="trial division"/>
+<meta property="og:image" content="">
+
+  <title>Digital Ramblings &ndash; Project Euler problem 3 - Largest prime factor</title>
+
+</head>
+<body>
+  <aside>
+    <div>
+      <a href="https://fractalleaf.github.io">
+        <img src="https://fractalleaf.github.io/theme/img/profile.png" alt="Digital Ramblings" title="Digital Ramblings">
+      </a>
+      <h1><a href="https://fractalleaf.github.io">Digital Ramblings</a></h1>
+
+<p>Post Hoc, Ergo Propter Hoc</p>
+      <nav>
+        <ul class="list">
+          <li><a href="https://fractalleaf.github.io/pages/about.html#about">About</a></li>
+
+        </ul>
+      </nav>
+
+      <ul class="social">
+        <li><a class="sc-linkedin" href="https://www.linkedin.com/in/sfrimann/" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+        <li><a class="sc-github" href="https://github.com/fractalleaf" target="_blank"><i class="fa fa-github"></i></a></li>
+      </ul>
+    </div>
+
+
+  </aside>
+  <main>
+
+    <nav>
+      <a href="https://fractalleaf.github.io">    Home
+</a>
+
+      <a href="/archives.html">Archives</a>
+      <a href="/categories.html">Categories</a>
+      <a href="/tags.html">Tags</a>
+
+      <a href="https://fractalleaf.github.io/feeds/all.atom.xml">    Atom
+</a>
+
+    </nav>
+
+<article class="single">
+  <header>
+      
+    <h1 id="project-euler-problem-3">Project Euler problem 3 - Largest prime&nbsp;factor</h1>
+    <p>
+          Posted on Mon 16 July 2018 in <a href="https://fractalleaf.github.io/category/project-euler.html">Project Euler</a>
+
+
+    </p>
+  </header>
+
+
+  <div>
+    <p><a href="https://projecteuler.net/problem=3">Link to problem on Project Euler&nbsp;homepage</a></p>
+<p><a href="https://github.com/fractalleaf/project-euler/tree/master/p003">Link to Github&nbsp;repository</a></p>
+<h2>Description</h2>
+<p>The prime factors of 13195 are 5, 7, 13 and&nbsp;29.</p>
+<p>What is the largest prime factor of the number&nbsp;600851475143?</p>
+<h2>Solution</h2>
+<p>The simplest algorithm for solving the problem is <a href="https://en.wikipedia.org/wiki/Trial_division">trial division</a>.</p>
+<p>Trial division is an integer factorisation algorithm that finds all prime factors of an integer, <span class="math">\(n\)</span>, by finding divisors amongst smaller integers. A simple implementation of the algorithm (returning only the largest prime factor)&nbsp;is</p>
+<div class="highlight"><pre><span></span><span class="n">LOW_LIMIT</span> <span class="o">=</span> <span class="mi">13195</span>
+<span class="n">HIGH_LIMIT</span> <span class="o">=</span> <span class="mi">600851475143</span>
+
+<span class="k">def</span> <span class="nf">p003</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find largest prime factor of n by trial division&quot;&quot;&quot;</span>
+    <span class="n">factor</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">while</span> <span class="n">factor</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">%</span> <span class="n">factor</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">//=</span> <span class="n">factor</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">factor</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">factor</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Result for n == {}: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LOW_LIMIT</span><span class="p">,</span> <span class="n">p003</span><span class="p">(</span><span class="n">LOW_LIMIT</span><span class="p">)))</span>
+
+<span class="o">%</span><span class="n">timeit</span> <span class="n">p003</span><span class="p">(</span><span class="n">HIGH_LIMIT</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Result for n == 13195: 29
+649 µs ± 17.2 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+</pre></div>
+
+
+<p>The factors that divides <code>n</code> in line 9 are always prime. This is because if the factor was composite its prime constituents would have been divided with <code>n</code> in an earlier&nbsp;iteration.</p>
+<h2>Optimisation</h2>
+<p>The trial division algorithm can be optimised in a couple of&nbsp;ways.</p>
+<p>First, any integer, <span class="math">\(n\)</span>, can have at most one prime factor larger than <span class="math">\(\sqrt{n}\)</span>, and it is therefore only necessary to test for trial factors up to <span class="math">\(\sqrt{n}\)</span>. Any remaining factor above <span class="math">\(\sqrt{n}\)</span> will be prime (since, it would have been previously divided out&nbsp;otherwise).</p>
+<p>Second, the only one even prime is 2. By dividing <span class="math">\(n\)</span> by 2 until it becomes odd, afterwards it is only necessary to test odd trial factors, halving the number of&nbsp;iterations.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">p003</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find largest prime factor of n by trial division&quot;&quot;&quot;</span>
+    <span class="n">factor</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">while</span> <span class="n">n</span> <span class="o">%</span> <span class="n">factor</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">//=</span> <span class="n">factor</span>
+
+    <span class="n">factor</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="k">while</span> <span class="n">factor</span><span class="o">*</span><span class="n">factor</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">%</span> <span class="n">factor</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">//=</span> <span class="n">factor</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">factor</span> <span class="o">+=</span> <span class="mi">2</span>
+
+    <span class="k">return</span> <span class="n">n</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Result for n == {}: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LOW_LIMIT</span><span class="p">,</span> <span class="n">p003</span><span class="p">(</span><span class="n">LOW_LIMIT</span><span class="p">)))</span>
+
+<span class="o">%</span><span class="n">timeit</span> <span class="n">p003</span><span class="p">(</span><span class="n">HIGH_LIMIT</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Result for n == 13195: 29
+99 µs ± 2.35 µs per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+</pre></div>
+
+
+<p>With these optimisations the runtime is improved by a factor of&nbsp;six.</p>
+<h2>Conclusions</h2>
+<p>Trial division is not generally the best algorithm to use for prime factorisation, but in cases such as the one at hand where there are only small prime factors, it performs&nbsp;well.</p>
+<p>For prime factorisation of larger integers it can still be advantageous to use trial division to test for divisibility by small primes before switching over to a more specialised&nbsp;algorithm.</p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="https://fractalleaf.github.io/tag/prime-numbers.html">prime numbers</a>
+      <a href="https://fractalleaf.github.io/tag/project-euler.html">project euler</a>
+      <a href="https://fractalleaf.github.io/tag/python.html">python</a>
+      <a href="https://fractalleaf.github.io/tag/trial-division.html">trial division</a>
+    </p>
+  </div>
+
+
+
+
+
+</article>
+
+    <footer>
+<p>
+  &copy;  2018 - This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>
+</p>
+<p>    Powered by <a href="http://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="http://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a>
+</p><p>
+  <a rel="license"
+     href="http://creativecommons.org/licenses/by-sa/4.0/"
+     target="_blank">
+    <img alt="Creative Commons License"
+         title="Creative Commons License"
+         style="border-width:0"
+           src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png"
+         width="80"
+         height="15"/>
+  </a>
+</p>    </footer>
+  </main>
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Digital Ramblings ",
+  "url" : "https://fractalleaf.github.io",
+  "image": "",
+  "description": ""
+}
+</script>
+
+</body>
+</html>
