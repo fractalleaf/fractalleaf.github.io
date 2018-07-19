@@ -1,0 +1,313 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="" />
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="https://fractalleaf.github.io/theme/stylesheet/style.min.css">
+
+  <link rel="stylesheet" type="text/css" href="https://fractalleaf.github.io/theme/pygments/native.min.css">
+  <link rel="stylesheet" type="text/css" href="https://fractalleaf.github.io/theme/font-awesome/css/font-awesome.min.css">
+
+
+    <link href="https://fractalleaf.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Digital Ramblings Atom">
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-122111225-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
+<meta name="author" content="Søren" />
+<meta name="description" content="Solution to the fourth Project Euler problem. Finding the largest palindromic number, which is a product between two 3-digit numbers." />
+<meta name="keywords" content="palindrome, project euler, python">
+
+<meta property="og:site_name" content="Digital Ramblings"/>
+<meta property="og:title" content="Project Euler problem 4 - Largest palindrome product"/>
+<meta property="og:description" content="Solution to the fourth Project Euler problem. Finding the largest palindromic number, which is a product between two 3-digit numbers."/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="https://fractalleaf.github.io/project-euler-problem-4.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2018-07-19 17:30:00+02:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="https://fractalleaf.github.io/author/soren.html">
+<meta property="article:section" content="Project Euler"/>
+<meta property="article:tag" content="palindrome"/>
+<meta property="article:tag" content="project euler"/>
+<meta property="article:tag" content="python"/>
+<meta property="og:image" content="">
+
+  <title>Digital Ramblings &ndash; Project Euler problem 4 - Largest palindrome product</title>
+
+</head>
+<body>
+  <aside>
+    <div>
+      <a href="https://fractalleaf.github.io">
+        <img src="https://fractalleaf.github.io/theme/img/profile.png" alt="Digital Ramblings" title="Digital Ramblings">
+      </a>
+      <h1><a href="https://fractalleaf.github.io">Digital Ramblings</a></h1>
+
+<p>Post Hoc, Ergo Propter Hoc</p>
+      <nav>
+        <ul class="list">
+          <li><a href="https://fractalleaf.github.io/pages/about.html#about">About</a></li>
+
+        </ul>
+      </nav>
+
+      <ul class="social">
+        <li><a class="sc-linkedin" href="https://www.linkedin.com/in/sfrimann/" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+        <li><a class="sc-github" href="https://github.com/fractalleaf" target="_blank"><i class="fa fa-github"></i></a></li>
+      </ul>
+    </div>
+
+
+  </aside>
+  <main>
+
+    <nav>
+      <a href="https://fractalleaf.github.io">    Home
+</a>
+
+      <a href="/archives.html">Archives</a>
+      <a href="/categories.html">Categories</a>
+      <a href="/tags.html">Tags</a>
+
+      <a href="https://fractalleaf.github.io/feeds/all.atom.xml">    Atom
+</a>
+
+    </nav>
+
+<article class="single">
+  <header>
+      
+    <h1 id="project-euler-problem-4">Project Euler problem 4 - Largest palindrome&nbsp;product</h1>
+    <p>
+          Posted on Thu 19 July 2018 in <a href="https://fractalleaf.github.io/category/project-euler.html">Project Euler</a>
+
+
+    </p>
+  </header>
+
+
+  <div>
+    <p><a href="https://projecteuler.net/problem=4">Link to problem on Project Euler&nbsp;homepage</a></p>
+<p><a href="https://github.com/fractalleaf/project-euler/tree/master/p004">Link to Github&nbsp;repository</a></p>
+<h2>Description</h2>
+<p>A palindromic number reads the same both ways. The largest palindrome made from the product of two 2-digit numbers is <span class="math">\(9009 = 91 \times 99\)</span>.</p>
+<p>Find the largest palindrome made from the product of two 3-digit&nbsp;numbers.</p>
+<h2>Brute&nbsp;force</h2>
+<p>In the simplest brute force solution to the problem one simply iterates over all products between 3-digit numbers to find the largest&nbsp;palindrome</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_digits</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;get digits of a number. Return as list&quot;&quot;&quot;</span>
+    <span class="n">digits</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">n</span><span class="p">,</span> <span class="n">digit</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="n">digits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">digit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">digits</span>
+
+<span class="k">def</span> <span class="nf">is_palindrome</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check if a number is a palindrome&quot;&quot;&quot;</span>
+    <span class="n">digits</span> <span class="o">=</span> <span class="n">get_digits</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">ln</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">digits</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ln</span><span class="o">//</span><span class="mi">2</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">digits</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="n">digits</span><span class="p">[</span><span class="n">ln</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">i</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+    <span class="k">return</span> <span class="bp">True</span>
+
+<span class="k">def</span> <span class="nf">p004</span><span class="p">(</span><span class="n">ndigit</span><span class="p">):</span>
+    <span class="n">ulimit</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="n">ndigit</span> <span class="c1"># upper limit</span>
+    <span class="n">llimit</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="n">ndigit</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># lower limit</span>
+
+    <span class="n">mx</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># biggest palindrome found so far</span>
+
+    <span class="k">for</span> <span class="n">n1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">llimit</span><span class="p">,</span> <span class="n">ulimit</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">n2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">ulimit</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">is_palindrome</span><span class="p">(</span><span class="n">n1</span><span class="o">*</span><span class="n">n2</span><span class="p">)</span> <span class="ow">and</span> <span class="n">n1</span><span class="o">*</span><span class="n">n2</span> <span class="o">&gt;</span> <span class="n">mx</span><span class="p">:</span>
+                <span class="n">mx</span> <span class="o">=</span> <span class="n">n1</span><span class="o">*</span><span class="n">n2</span>
+
+    <span class="k">return</span> <span class="n">mx</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Ndigits = 2&quot;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Result for ndigit = 2: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p004</span><span class="p">(</span><span class="mi">2</span><span class="p">)))</span>
+<span class="o">%</span><span class="n">timeit</span> <span class="n">p004</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Ndigits = 3&quot;</span><span class="p">)</span>
+<span class="o">%</span><span class="n">timeit</span> <span class="n">p004</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Ndigits = 2
+Result for ndigit = 2: 9009
+5.07 ms ± 159 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+
+Ndigits = 3
+647 ms ± 1.39 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+</pre></div>
+
+
+<h2>Optimisation</h2>
+<p>The most obvious optimisation of the brute force solution is to iterate &#8220;backwards&#8221; from large to small 3-digit numbers, and to avoid iterating over products that are smaller than the largest palindrome found so&nbsp;far.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">p004</span><span class="p">(</span><span class="n">ndigit</span><span class="p">):</span>
+    <span class="n">ulimit</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="n">ndigit</span> <span class="o">-</span> <span class="mi">1</span> <span class="c1"># upper limit</span>
+    <span class="n">llimit</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="n">ndigit</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="c1"># lower limit</span>
+
+    <span class="n">mx</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># biggest palindrome found so far</span>
+
+    <span class="c1"># iterate backwards to encounter largest palindrome sooner</span>
+    <span class="k">for</span> <span class="n">n1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ulimit</span><span class="p">,</span> <span class="n">llimit</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">n2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ulimit</span><span class="p">,</span> <span class="n">n1</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+
+            <span class="c1"># if n1*n2 is smaller than largest palindrome it will continue to</span>
+            <span class="c1"># be so becaue n2 is decreasing</span>
+            <span class="k">if</span> <span class="n">n1</span><span class="o">*</span><span class="n">n2</span> <span class="o">&lt;=</span> <span class="n">mx</span><span class="p">:</span>
+                <span class="k">break</span>
+
+            <span class="k">if</span> <span class="n">is_palindrome</span><span class="p">(</span><span class="n">n1</span><span class="o">*</span><span class="n">n2</span><span class="p">):</span>
+                <span class="n">mx</span> <span class="o">=</span> <span class="n">n1</span><span class="o">*</span><span class="n">n2</span>
+
+    <span class="k">return</span> <span class="n">mx</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Ndigits = 2&quot;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Result for ndigit = 2: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p004</span><span class="p">(</span><span class="mi">2</span><span class="p">)))</span>
+<span class="o">%</span><span class="n">timeit</span> <span class="n">p004</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Ndigits = 3&quot;</span><span class="p">)</span>
+<span class="o">%</span><span class="n">timeit</span> <span class="n">p004</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Ndigits = 2
+Result for ndigit = 2: 9009
+74.1 µs ± 289 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+
+Ndigits = 3
+5.8 ms ± 38.1 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+</pre></div>
+
+
+<p>This simple optimisation improves the runtime by roughly a factor of&nbsp;100.</p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="https://fractalleaf.github.io/tag/palindrome.html">palindrome</a>
+      <a href="https://fractalleaf.github.io/tag/project-euler.html">project euler</a>
+      <a href="https://fractalleaf.github.io/tag/python.html">python</a>
+    </p>
+  </div>
+
+
+
+
+
+</article>
+
+    <footer>
+<p>
+  &copy;  2018 - This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>
+</p>
+<p>    Powered by <a href="http://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="http://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a>
+</p><p>
+  <a rel="license"
+     href="http://creativecommons.org/licenses/by-sa/4.0/"
+     target="_blank">
+    <img alt="Creative Commons License"
+         title="Creative Commons License"
+         style="border-width:0"
+           src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png"
+         width="80"
+         height="15"/>
+  </a>
+</p>    </footer>
+  </main>
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Digital Ramblings ",
+  "url" : "https://fractalleaf.github.io",
+  "image": "",
+  "description": ""
+}
+</script>
+
+</body>
+</html>
