@@ -1,0 +1,433 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="" />
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="https://fractalleaf.github.io/theme/stylesheet/style.min.css">
+
+  <link rel="stylesheet" type="text/css" href="https://fractalleaf.github.io/theme/pygments/native.min.css">
+  <link rel="stylesheet" type="text/css" href="https://fractalleaf.github.io/theme/font-awesome/css/font-awesome.min.css">
+
+
+    <link href="https://fractalleaf.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Digital Ramblings Atom">
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-122111225-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
+<meta name="author" content="Søren" />
+<meta name="description" content="Calculating the probability of crossing a river, via a series of 13 bridges, where some have been knocked out by a storm. Both a brute-force and an elegant solution." />
+<meta name="keywords" content="path finding, python">
+
+<meta property="og:site_name" content="Digital Ramblings"/>
+<meta property="og:title" content="Bridge over troubled water"/>
+<meta property="og:description" content="Calculating the probability of crossing a river, via a series of 13 bridges, where some have been knocked out by a storm. Both a brute-force and an elegant solution."/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="https://fractalleaf.github.io/bridge-over-troubled-water.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2018-08-07 21:00:00+02:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="https://fractalleaf.github.io/author/soren.html">
+<meta property="article:section" content="Puzzles"/>
+<meta property="article:tag" content="path finding"/>
+<meta property="article:tag" content="python"/>
+<meta property="og:image" content="">
+
+  <title>Digital Ramblings &ndash; Bridge over troubled water</title>
+
+</head>
+<body>
+  <aside>
+    <div>
+      <a href="https://fractalleaf.github.io">
+        <img src="https://fractalleaf.github.io/theme/img/profile.png" alt="Digital Ramblings" title="Digital Ramblings">
+      </a>
+      <h1><a href="https://fractalleaf.github.io">Digital Ramblings</a></h1>
+
+<p>Post Hoc, Ergo Propter Hoc</p>
+      <nav>
+        <ul class="list">
+          <li><a href="https://fractalleaf.github.io/pages/about.html#about">About</a></li>
+
+        </ul>
+      </nav>
+
+      <ul class="social">
+        <li><a class="sc-linkedin" href="https://www.linkedin.com/in/sfrimann/" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+        <li><a class="sc-github" href="https://github.com/fractalleaf" target="_blank"><i class="fa fa-github"></i></a></li>
+      </ul>
+    </div>
+
+
+  </aside>
+  <main>
+
+    <nav>
+      <a href="https://fractalleaf.github.io">    Home
+</a>
+
+      <a href="/archives.html">Archives</a>
+      <a href="/categories.html">Categories</a>
+      <a href="/tags.html">Tags</a>
+
+      <a href="https://fractalleaf.github.io/feeds/all.atom.xml">    Atom
+</a>
+
+    </nav>
+
+<article class="single">
+  <header>
+      
+    <h1 id="bridge-over-troubled-water">Bridge over troubled&nbsp;water</h1>
+    <p>
+          Posted on Tue 07 August 2018 in <a href="https://fractalleaf.github.io/category/puzzles.html">Puzzles</a>
+
+
+    </p>
+  </header>
+
+
+  <div>
+    <p><a href="https://github.com/fractalleaf/puzzles/tree/master/bridge-problem">Link to GitHub&nbsp;repository</a></p>
+<p>The data journalism website <a href="https://fivethirtyeight.com">FiveThirtyEight</a> has a weekly column that presents a problem connected to math, logic and/or probability. A while ago they posted a <a href="https://fivethirtyeight.com/features/night-falls-a-storm-rolls-in-can-you-cross-the-river/">problem</a>, that I really enjoyed because it has a surprisingly simple solution (which I missed completely). I therefore thought I would share it&nbsp;here</p>
+<h2>The&nbsp;problem</h2>
+<p>You’re on the north shore of a river, and want to cross to the south, via a series of 13 bridges and six islands, which you can see in the diagram below. But, as you approach the water, night falls, a bad storm rolls in, and you’re forced to wait until morning to try to cross. Overnight, the storm could render some of the bridges unusable — it has a 50 percent chance of knocking out each of the bridges. (The chance is independent for each&nbsp;bridge.)</p>
+<figure align="middle">
+  <img src="https://fractalleaf.github.io/Puzzles/images/bridge1.png" title="Bridge over troubled water" width=600>
+  <figcaption>Illustration from FiveThirtyEight</figcaption>
+</figure>
+
+<p>Question 1: What’s the probability you will be able to cross the river in the morning? (You have no boat, can’t swim, can’t fix the bridges, etc. No&nbsp;tricks.)</p>
+<p>Now imagine a different, wider river, with many more islands — in fact, arbitrarily many. Specifically, imagine that the islands are arrayed in an N-rows-by-N+1-columns grid — similar to before, where N happened to equal two — and connected by bridges to each adjacent island in the same way. Each island adjacent to the shore is also connected by a bridge to the shore. It would look something like&nbsp;this:</p>
+<figure align="middle">
+  <img src="https://fractalleaf.github.io/Puzzles/images/bridge2.png" title="Bridge over troubled water" width=600>
+  <figcaption>Illustration from FiveThirtyEight</figcaption>
+</figure>
+
+<p>Question 2: What’s the probability you’ll be able to cross this river in the morning, after the same storm — with the same independent 50 percent chance of knocking out each bridge — rolls&nbsp;through?</p>
+<h2>Brute-force&nbsp;solution</h2>
+<p>Let us start by considering how many possible configurations there are of the system of bridges. From the geometry of the problem one can quickly realise that the total number of bridges for a particular value of <span class="math">\(N\)</span>&nbsp;is</p>
+<div class="math">$$N_\mathrm{bridge} = N^2 + (N+1)^2.$$</div>
+<p>Each bridge has two possible states: it stays or it is knocked out. Therefore the number of different configurations for the system of bridges&nbsp;are</p>
+<div class="math">$$N_\mathrm{configuration} = 2^{N_\mathrm{bridge}}.$$</div>
+<p>Thus, for <span class="math">\(N=2\)</span>, <span class="math">\(N_\mathrm{bridge} = 13\)</span> and <span class="math">\(N_\mathrm{configuration} = 8192\)</span>. Because the probability of each bridge being knocked out is exactly 50 percent all possible configurations are equally&nbsp;likely.</p>
+<p>A brute-force solution to the problem is to simply iterate over all possible configurations and count those where the river can still be&nbsp;crossed.</p>
+<h3>Brute-force&nbsp;setup</h3>
+<p>I will use the python package <code>networkx</code> to create an undirected graph to represent the layout of the&nbsp;problem.</p>
+<div class="highlight"><pre><span></span><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="kn">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">mp</span>
+
+<span class="k">def</span> <span class="nf">generate_bridge_layout</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate undirected graph for bridge layout&quot;&quot;&quot;</span>
+
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">2</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># vertical bridges</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># horizontal bridges</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># paths between start node and south riverbank nodes</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># paths between north riverbank nodes and end node</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="s1">&#39;end&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">graph</span>
+
+<span class="k">def</span> <span class="nf">draw_bridge_layout</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;draw bridge layout&quot;&quot;&quot;</span>
+
+    <span class="n">pos</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="s1">&#39;start&#39;</span><span class="p">:</span>
+            <span class="n">pos</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">node</span> <span class="o">==</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span>
+            <span class="n">pos</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pos</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">node</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">node_color</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> 
+            <span class="n">font_color</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">font_weight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+    <span class="n">mp</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+
+<span class="n">bridge_layout_2</span> <span class="o">=</span> <span class="n">generate_bridge_layout</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+<span class="n">draw_bridge_layout</span><span class="p">(</span><span class="n">bridge_layout_2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+
+<figure align="middle">
+  <img src="https://fractalleaf.github.io/Puzzles/images/bridge_graph.png" title="Bridge over troubled water" width=600>
+  <figcaption>Graph showing the geometry of the problem</figcaption>
+</figure>
+
+<p>The plot shows the undirected graph representing the <span class="math">\(N=2\)</span> case, with two special nodes (start and end) added so that the path finding problem starts and terminates at fixed nodes. The labels on the remaining nodes represent their coordinate positions with the origin at the lower left&nbsp;node.</p>
+<h3>Solving the&nbsp;problem</h3>
+<p>The problem can be solved by iterating over all possible bridge configurations, and checking if there is a path between the start and end&nbsp;nodes.</p>
+<p>The function below generates all possible configurations of the problem and checks whether there is a path from the start to the end node. The function uses the <code>has_path</code> function, that is part of the <code>networkx</code> package.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">combinations</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+
+<span class="k">def</span> <span class="nf">nbridge</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">n</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="k">def</span> <span class="nf">generate_solutions</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span>
+    <span class="c1"># get list of bridges</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">]:</span>
+            <span class="k">continue</span>
+        <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+
+    <span class="n">n_bridges</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+
+    <span class="n">solutions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">n_bridges_removed</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_bridges</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># loop over all combinations bridges with n_bridges_removed removed</span>
+        <span class="k">for</span> <span class="n">bridges_removed</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">n_bridges_removed</span><span class="p">):</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">remove_edges_from</span><span class="p">(</span><span class="n">bridges_removed</span><span class="p">)</span> <span class="c1"># remove the bridges</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">has_path</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">)</span> <span class="c1"># check if a path exists</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">bridges_removed</span><span class="p">)</span> <span class="c1"># reinsert the bridges</span>
+
+            <span class="c1">#append solution</span>
+            <span class="n">solutions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">result</span><span class="p">,</span> <span class="n">n_bridges_removed</span><span class="o">=</span><span class="n">n_bridges_removed</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">solutions</span><span class="p">)</span>
+
+<span class="n">bridge_solution_2</span> <span class="o">=</span> <span class="n">generate_solutions</span><span class="p">(</span><span class="n">bridge_layout_2</span><span class="p">)</span>
+<span class="n">n_clear_path_2</span> <span class="o">=</span> <span class="n">bridge_solution_2</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;N = 2 case&quot;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Number of bridges = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nbridge</span><span class="p">(</span><span class="mi">2</span><span class="p">)))</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Number of possible configurations = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">nbridge</span><span class="p">(</span><span class="mi">2</span><span class="p">)))</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Number of configurations with clear path = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_clear_path_2</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Probability of crossing river = {:.2%}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_clear_path_2</span><span class="o">/</span><span class="mi">2</span><span class="o">**</span><span class="n">nbridge</span><span class="p">(</span><span class="mi">2</span><span class="p">)))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>N = 2 case
+Number of bridges = 13
+Number of possible configurations = 8192
+Number of configurations with clear path = 4096
+Probability of crossing river = 50.00%
+</pre></div>
+
+
+<p>It is possible to cross the river for exactly 50 percent of the configurations, and we thus have our answer to question&nbsp;1.</p>
+<p>To answer question 2 let&#8217;s check the probability for the <span class="math">\(N=1\)</span> and <span class="math">\(N=3\)</span>&nbsp;cases.</p>
+<div class="highlight"><pre><span></span><span class="n">bridge_layout_1</span> <span class="o">=</span> <span class="n">generate_bridge_layout</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">bridge_solution_1</span> <span class="o">=</span> <span class="n">generate_solutions</span><span class="p">(</span><span class="n">bridge_layout_1</span><span class="p">)</span>
+<span class="n">n_clear_path_1</span> <span class="o">=</span> <span class="n">bridge_solution_1</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;N = 1 case&quot;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Number of bridges = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nbridge</span><span class="p">(</span><span class="mi">1</span><span class="p">)))</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Number of possible configurations = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">nbridge</span><span class="p">(</span><span class="mi">1</span><span class="p">)))</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Number of configurations with clear path = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_clear_path_1</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Probability of crossing river = {:.2%}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_clear_path_1</span><span class="o">/</span><span class="mi">2</span><span class="o">**</span><span class="n">nbridge</span><span class="p">(</span><span class="mi">1</span><span class="p">)))</span>
+
+<span class="n">bridge_layout_3</span> <span class="o">=</span> <span class="n">generate_bridge_layout</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">bridge_solution_3</span> <span class="o">=</span> <span class="n">generate_solutions</span><span class="p">(</span><span class="n">bridge_layout_3</span><span class="p">)</span>
+<span class="n">n_clear_path_3</span> <span class="o">=</span> <span class="n">bridge_solution_3</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;N = 3 case&quot;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Number of bridges = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nbridge</span><span class="p">(</span><span class="mi">3</span><span class="p">)))</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Number of possible configurations = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">nbridge</span><span class="p">(</span><span class="mi">3</span><span class="p">)))</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Number of configurations with clear path = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_clear_path_3</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Probability of crossing river = {:.2%}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_clear_path_3</span><span class="o">/</span><span class="mi">2</span><span class="o">**</span><span class="n">nbridge</span><span class="p">(</span><span class="mi">3</span><span class="p">)))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>N = 1 case
+Number of bridges = 5
+Number of possible configurations = 32
+Number of configurations with clear path = 16
+Probability of crossing river = 50.00%
+
+N = 3 case
+Number of bridges = 25
+Number of possible configurations = 33554432
+Number of configurations with clear path = 16777216
+Probability of crossing river = 50.00%
+</pre></div>
+
+
+<p>For <span class="math">\(N=1\)</span>, <span class="math">\(N=2\)</span>, and <span class="math">\(N=3\)</span>, the probability of being able to cross the river is exactly 50 percent. It would thus appear that the probability is always 50 percent nomatter the value of <span class="math">\(N\)</span>. Unforuntately, with <span class="math">\(33554432\)</span> possible configurations, <span class="math">\(N=3\)</span> is the largest case that can be comfortably solved with a brute-force approach. To get a definite answer to question 2, we therefore have to dwelve deeper into the&nbsp;problem.</p>
+<h2>Elegant&nbsp;solution</h2>
+<p>The more elegant solution does not really require much math. Imagine you are a ship sailing up the river past the group of islands from east to west. The mast of your ship is too tall to pass under a bridge so you can only cross through if the bridge has been knocked out. Notice that the geometry of the problem (regardless of the value of <span class="math">\(N\)</span>) for the ship sailing up the river is identical to the setup for the person trying to cross the river via the bridges. Since each bridge has a 50/50 chance of being knocked out, the two problems are completely identical. This means that the probability of the ship being able to sail past the group of islands, and you being able to cross the river must be the&nbsp;same.</p>
+<figure align="middle">
+  <img src="https://fractalleaf.github.io/Puzzles/images/bridge3.png" title="Bridge over troubled water" width=600>
+  <figcaption>Illustration from FiveThirtyEight</figcaption>
+</figure>
+
+<p>Finally, we notice that if you can cross the bridge by foot it will be impossible for the ship to sail past the islands and vice versa (the two problems are mutually exclusive). Therefore each have a 50% chance of achieving their goal, which also gives us the answer to question&nbsp;2.</p>
+<h2>Bonus: Varying the probability of bridge being knocked&nbsp;out</h2>
+<p>The analysis above is only valid if the probability of the bridge being knocked out is exactly 50 percent. What happens if the probability of each bridge being knocked out&nbsp;varies?</p>
+<p>Let <span class="math">\(p\)</span> be the probability that a bridge is not knocked out. Since <span class="math">\(p\)</span> is no longer assumed to be <span class="math">\(0.5\)</span> the probability of all configurations are no longer equal. The probability of a given configuration occuring&nbsp;is</p>
+<div class="math">$$p^{N_\mathrm{bridge} - N_\mathrm{gone}} \times (1-p)^{N_\mathrm{gone}}$$</div>
+<p>where <span class="math">\(N_\mathrm{gone}\)</span> is the number of bridges that have been knocked out. The probability of crossing the river is the sum of the probabilities of the configurations, where there is a path across the&nbsp;river.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">crossing_probability</span><span class="p">(</span><span class="n">probabilities</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;probability of crossing the river where p is probability of bridge staying&quot;&quot;&quot;</span>
+    <span class="n">n_bridge</span> <span class="o">=</span> <span class="n">nbridge</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+    <span class="n">df_temp</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]]</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y</span><span class="o">**</span><span class="p">(</span><span class="n">n_bridge</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">bridge_crossing_probabilities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">probabilities</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">probabilities</span><span class="p">):</span>
+        <span class="n">bridge_crossing_probabilities</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">df_temp</span><span class="o">.</span><span class="n">n_bridges_removed</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">bridge_crossing_probabilities</span>
+
+<span class="n">prob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">101</span><span class="p">)</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">solution</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="n">bridge_solution_1</span><span class="p">,</span> <span class="n">bridge_solution_2</span><span class="p">,</span> <span class="n">bridge_solution_3</span><span class="p">]):</span>
+    <span class="n">cross_prob</span> <span class="o">=</span> <span class="n">crossing_probability</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">solution</span><span class="p">)</span>
+    <span class="n">mp</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span> <span class="n">cross_prob</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;N = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<span class="n">mp</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">mp</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">mp</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Probability of bridge not being knocked out&quot;</span><span class="p">)</span>
+<span class="n">mp</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Probability of crossing river&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<figure align="middle">
+  <img src="https://fractalleaf.github.io/Puzzles/images/bridge_phase.png" title="Bridge over troubled water" width=600>
+  <figcaption>Probability of crossing the river vs. probability of bridge not being knocked out.</figcaption>
+</figure>
+
+<p>The plot shows how the probability of crossing the river changes for three values of <span class="math">\(N\)</span>.</p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="https://fractalleaf.github.io/tag/path-finding.html">path finding</a>
+      <a href="https://fractalleaf.github.io/tag/python.html">python</a>
+    </p>
+  </div>
+
+
+
+
+
+</article>
+
+    <footer>
+<p>
+  &copy;  2018 - This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>
+</p>
+<p>    Powered by <a href="http://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="http://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a>
+</p><p>
+  <a rel="license"
+     href="http://creativecommons.org/licenses/by-sa/4.0/"
+     target="_blank">
+    <img alt="Creative Commons License"
+         title="Creative Commons License"
+         style="border-width:0"
+           src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png"
+         width="80"
+         height="15"/>
+  </a>
+</p>    </footer>
+  </main>
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Digital Ramblings ",
+  "url" : "https://fractalleaf.github.io",
+  "image": "",
+  "description": ""
+}
+</script>
+
+</body>
+</html>
