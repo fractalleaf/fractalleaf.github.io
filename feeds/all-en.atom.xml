@@ -1,5 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Digital Ramblings</title><link href="https://fractalleaf.github.io/" rel="alternate"></link><link href="https://fractalleaf.github.io/feeds/all-en.atom.xml" rel="self"></link><id>https://fractalleaf.github.io/</id><updated>2018-08-07T21:00:00+02:00</updated><entry><title>Bridge over troubled water</title><link href="https://fractalleaf.github.io/bridge-over-troubled-water.html" rel="alternate"></link><published>2018-08-07T21:00:00+02:00</published><updated>2018-08-07T21:00:00+02:00</updated><author><name>Søren</name></author><id>tag:fractalleaf.github.io,2018-08-07:/bridge-over-troubled-water.html</id><summary type="html">&lt;p&gt;Calculating the probability of crossing a river, via a series of 13 bridges, where some have been knocked out by a storm. Both a brute-force and an elegant&amp;nbsp;solution.&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://github.com/fractalleaf/puzzles/tree/master/bridge-problem"&gt;Link to GitHub&amp;nbsp;repository&lt;/a&gt;&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Digital Ramblings</title><link href="https://fractalleaf.github.io/" rel="alternate"></link><link href="https://fractalleaf.github.io/feeds/all-en.atom.xml" rel="self"></link><id>https://fractalleaf.github.io/</id><updated>2018-12-15T19:00:00+01:00</updated><entry><title>Project Euler problem 5 - Smallest multiple</title><link href="https://fractalleaf.github.io/project-euler-problem-5.html" rel="alternate"></link><published>2018-12-15T19:00:00+01:00</published><updated>2018-12-15T19:00:00+01:00</updated><author><name>Søren</name></author><id>tag:fractalleaf.github.io,2018-12-15:/project-euler-problem-5.html</id><summary type="html">&lt;p&gt;Solution to the fifth Project Euler problem. Finding the smallest positive number that is evenly divisible by all numbers between 1 and&amp;nbsp;20.&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://projecteuler.net/problem=5"&gt;Link to problem on Project Euler&amp;nbsp;homepage&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/fractalleaf/project-euler/tree/master/p005"&gt;Link to Github&amp;nbsp;repository&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;Description&lt;/h2&gt;
+&lt;p&gt;2520 is the smallest number that can be divided by each of the numbers from 1 to 10 without any&amp;nbsp;remainder.&lt;/p&gt;
+&lt;p&gt;What is the smallest positive number that is evenly divisible by all of the numbers from 1 to&amp;nbsp;20?&lt;/p&gt;
+&lt;h2&gt;Brute&amp;nbsp;force&lt;/h2&gt;
+&lt;p&gt;In the simplest brute force solution to the problem one simply iterates over all integers and does trial division until a solution is&amp;nbsp;found&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;itertools&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;count&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;p005&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;k&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;count&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;k&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;j&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;k&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="n"&gt;j&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+                &lt;span class="k"&gt;break&lt;/span&gt;
+            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;j&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;k&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+                &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;
+
+&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;LIMIT&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;20&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;limit = {}&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;LIMIT&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Result for ndigit = 2: {}&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;p005&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;LIMIT&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;
+    &lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;timeit&lt;/span&gt; &lt;span class="n"&gt;p005&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;LIMIT&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;limit = 10
+Result for ndigit = 2: 2520
+827 µs ± 7.27 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+
+limit = 20
+Result for ndigit = 2: 232792560
+1min 18s ± 1.09 s per loop (mean ± std. dev. of 7 runs, 1 loop each)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Optimisation&lt;/h2&gt;
+&lt;p&gt;One may naively think that the smallest integer divisible by all integers from 1 to &lt;span class="math"&gt;\(k\)&lt;/span&gt; is the product of all integers between 1 and &lt;span class="math"&gt;\(k\)&lt;/span&gt;, also known as the factorial &lt;span class="math"&gt;\(k!\)&lt;/span&gt;. However, the brute force results shown above are much smaller than the factorials (&lt;span class="math"&gt;\(10! = 3628800\)&lt;/span&gt; and &lt;span class="math"&gt;\(20! = 2432902008176640000\)&lt;/span&gt;).&lt;/p&gt;
+&lt;p&gt;The &lt;a href="https://en.wikipedia.org/wiki/Fundamental_theorem_of_arithmetic"&gt;Fundamental theorem of arithmetic&lt;/a&gt; states that &lt;em&gt;every integer greater than 1 either is a prime number itself or can be represented as the product of prime numbers and that, moreover, this representation is unique&lt;/em&gt;. For example the &lt;span class="math"&gt;\(10 = 5\times 2\)&lt;/span&gt; and &lt;span class="math"&gt;\(12 = 2 \times 2 \times 3\)&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt;Thus, to find the smallest number evenly divisible by all numbers between 1 and &lt;span class="math"&gt;\(k\)&lt;/span&gt; we need the product of all prime factors such that each composite number can be generated at least once. In practice, we can achieve this by generating all primes up to &lt;span class="math"&gt;\(k\)&lt;/span&gt;. For each prime, &lt;span class="math"&gt;\(p\)&lt;/span&gt;, we calculate its multiplicity &lt;span class="math"&gt;\(n\)&lt;/span&gt; by requring that &lt;span class="math"&gt;\(p^n \leq k\)&lt;/span&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sympy&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;primerange&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;math&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;log&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;p005&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;k&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;prime&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;primerange&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;k&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)):&lt;/span&gt;
+        &lt;span class="n"&gt;exponent&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;k&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;prime&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+        &lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;*=&lt;/span&gt; &lt;span class="n"&gt;prime&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;exponent&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;
+
+&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;LIMIT&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;20&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;limit = {}&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;LIMIT&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Result for ndigit = 2: {}&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;p005&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;LIMIT&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;
+    &lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;timeit&lt;/span&gt; &lt;span class="n"&gt;p005&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;LIMIT&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;limit = 10
+Result for ndigit = 2: 2520
+12.6 µs ± 410 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+
+limit = 20
+Result for ndigit = 2: 232792560
+26.3 µs ± 850 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The optimisation improves the runtime by more than a factor &lt;span class="math"&gt;\(10^6\)&lt;/span&gt;.&lt;/p&gt;
+&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width &lt; 768) ? "left" : align;
+        indent = (screen.width &lt; 768) ? "0em" : indent;
+        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+&lt;/script&gt;</content><category term="prime numbers"></category><category term="project euler"></category><category term="python"></category></entry><entry><title>Bridge over troubled water</title><link href="https://fractalleaf.github.io/bridge-over-troubled-water.html" rel="alternate"></link><published>2018-08-07T21:00:00+02:00</published><updated>2018-08-07T21:00:00+02:00</updated><author><name>Søren</name></author><id>tag:fractalleaf.github.io,2018-08-07:/bridge-over-troubled-water.html</id><summary type="html">&lt;p&gt;Calculating the probability of crossing a river, via a series of 13 bridges, where some have been knocked out by a storm. Both a brute-force and an elegant&amp;nbsp;solution.&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://github.com/fractalleaf/puzzles/tree/master/bridge-problem"&gt;Link to GitHub&amp;nbsp;repository&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;The data journalism website &lt;a href="https://fivethirtyeight.com"&gt;FiveThirtyEight&lt;/a&gt; has a weekly column that presents a problem connected to math, logic and/or probability. A while ago they posted a &lt;a href="https://fivethirtyeight.com/features/night-falls-a-storm-rolls-in-can-you-cross-the-river/"&gt;problem&lt;/a&gt;, that I really enjoyed because it has a surprisingly simple solution (which I missed completely). I therefore thought I would share it&amp;nbsp;here&lt;/p&gt;
 &lt;h2&gt;The&amp;nbsp;problem&lt;/h2&gt;
 &lt;p&gt;You’re on the north shore of a river, and want to cross to the south, via a series of 13 bridges and six islands, which you can see in the diagram below. But, as you approach the water, night falls, a bad storm rolls in, and you’re forced to wait until morning to try to cross. Overnight, the storm could render some of the bridges unusable — it has a 50 percent chance of knocking out each of the bridges. (The chance is independent for each&amp;nbsp;bridge.)&lt;/p&gt;
