@@ -1,0 +1,441 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="" />
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="https://fractalleaf.github.io/theme/stylesheet/style.min.css">
+
+  <link rel="stylesheet" type="text/css" href="https://fractalleaf.github.io/theme/pygments/native.min.css">
+  <link rel="stylesheet" type="text/css" href="https://fractalleaf.github.io/theme/font-awesome/css/font-awesome.min.css">
+
+
+    <link href="https://fractalleaf.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Digital Ramblings Atom">
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-122111225-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
+<meta name="author" content="Søren" />
+<meta name="description" content="In this post, I will introduce the empirical Bayes method. The method is useful when working with problems where you have to estimate a lot of similar quantities. For example, say you wanted to find the best baseball player of all time. One simple (too simple, but this is just for illustration) approach would be to rank the players by their batting average. However, doing so would likely reveal that the players with the highest batting average are those who only got one or two plate appearances in their career and were lucky to get hits. The empirical Bayes method makes it possible to get more realistic estimates of the batting average by incorporating the evidence of all other recorded at bats." />
+<meta name="keywords" content="data analysis, bayesian inference, empirical bayes, python">
+
+<meta property="og:site_name" content="Digital Ramblings"/>
+<meta property="og:title" content="Introduction to empirical Bayes (with rat tumour example)"/>
+<meta property="og:description" content="In this post, I will introduce the empirical Bayes method. The method is useful when working with problems where you have to estimate a lot of similar quantities. For example, say you wanted to find the best baseball player of all time. One simple (too simple, but this is just for illustration) approach would be to rank the players by their batting average. However, doing so would likely reveal that the players with the highest batting average are those who only got one or two plate appearances in their career and were lucky to get hits. The empirical Bayes method makes it possible to get more realistic estimates of the batting average by incorporating the evidence of all other recorded at bats."/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="https://fractalleaf.github.io/empirical-bayes.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2019-01-13 16:00:00+01:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="https://fractalleaf.github.io/author/soren.html">
+<meta property="article:section" content="data analysis"/>
+<meta property="article:tag" content="data analysis"/>
+<meta property="article:tag" content="bayesian inference"/>
+<meta property="article:tag" content="empirical bayes"/>
+<meta property="article:tag" content="python"/>
+<meta property="og:image" content="">
+
+  <title>Digital Ramblings &ndash; Introduction to empirical Bayes (with rat tumour example)</title>
+
+</head>
+<body>
+  <aside>
+    <div>
+      <a href="https://fractalleaf.github.io">
+        <img src="https://fractalleaf.github.io/theme/img/profile.png" alt="Digital Ramblings" title="Digital Ramblings">
+      </a>
+      <h1><a href="https://fractalleaf.github.io">Digital Ramblings</a></h1>
+
+<p>Post Hoc, Ergo Propter Hoc</p>
+      <nav>
+        <ul class="list">
+          <li><a href="https://fractalleaf.github.io/pages/about.html#about">About</a></li>
+
+        </ul>
+      </nav>
+
+      <ul class="social">
+        <li><a class="sc-linkedin" href="https://www.linkedin.com/in/sfrimann/" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+        <li><a class="sc-github" href="https://github.com/fractalleaf" target="_blank"><i class="fa fa-github"></i></a></li>
+      </ul>
+    </div>
+
+
+  </aside>
+  <main>
+
+    <nav>
+      <a href="https://fractalleaf.github.io">    Home
+</a>
+
+      <a href="/archives.html">Archives</a>
+      <a href="/categories.html">Categories</a>
+      <a href="/tags.html">Tags</a>
+
+      <a href="https://fractalleaf.github.io/feeds/all.atom.xml">    Atom
+</a>
+
+    </nav>
+
+<article class="single">
+  <header>
+      
+    <h1 id="empirical-bayes">Introduction to empirical Bayes (with rat tumour&nbsp;example)</h1>
+    <p>
+          Posted on Sun 13 January 2019 in <a href="https://fractalleaf.github.io/category/data-analysis.html">data analysis</a>
+
+
+    </p>
+  </header>
+
+
+  <div>
+    <p><a href="https://github.com/fractalleaf/Bayesian-data-analysis/blob/master/empirical_Bayes_rat_tumour1.ipynb">Link to GitHub&nbsp;repository</a></p>
+<p>In this post, I will introduce the empirical Bayes method. The method is useful when working with problems where you have to estimate a lot of similar quantities. For example, say you wanted to find the best baseball player of all time. One simple (too simple, but this is just for illustration) approach would be to rank the players by their batting average. However, doing so would likely reveal that the players with the highest batting average are those who only got one or two plate appearances in their career and were lucky to get hits. The empirical Bayes method makes it possible to get more realistic estimates of the batting average by incorporating the evidence of all other recorded at&nbsp;bats.</p>
+<p>On his blog, <a href="http://varianceexplained.org">varianceexplained.org</a>, David Robinson has an excellent <a href="http://varianceexplained.org/r/simulation-bayes-baseball/">series of posts</a> where he explores the empirical Bayes method using Baseball statistics. In this post, I will also explore the empirical Bayes method, but using the rat tumour data from Chapter 5 of <a href="http://www.stat.columbia.edu/~gelman/book/">Bayesian Data Analysis</a> by Gelman et&nbsp;al.</p>
+<h2>Data</h2>
+<p>Below is posted data collected in 71 experiments, which records the occurrence of a specific type of tumours observed in female lab rats. Each experiment records two quantities: the total number of rats that were examined in the experiment, <span class="math">\(n_i\)</span>, and the number of rats that were found to have a tumour of the specified type, <span class="math">\(y_i\)</span>.</p>
+<div class="highlight"><pre><span></span><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+
+<span class="c1"># Data from Gelman et al.</span>
+<span class="c1"># Original data from Tarone (1982)</span>
+<span class="c1"># Number of rats with tumours in each experiment</span>
+<span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> \
+     <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span>\
+     <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+<span class="c1"># Total number of rats in each experiment</span>
+<span class="n">n</span> <span class="o">=</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">27</span><span class="p">,</span>\
+     <span class="mi">25</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">49</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">46</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">49</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span>\
+     <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">46</span><span class="p">,</span> <span class="mi">49</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">46</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span>\
+     <span class="mi">24</span><span class="p">,</span> <span class="mi">14</span><span class="p">]</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;y&#39;</span><span class="p">:</span><span class="n">y</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">:</span><span class="n">n</span><span class="p">})</span>
+</pre></div>
+
+
+<p>Suppose we aim to estimate the probability, <span class="math">\(\theta\)</span>, of a female lab rat developing a tumour. We can get a raw estimate of the tumour probability for each experiment by calculating the average <span class="math">\(y_i/n_i\)</span>.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="kn">as</span> <span class="nn">sns</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">rc</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">:(</span><span class="mf">11.7</span><span class="p">,</span><span class="mf">8.27</span><span class="p">)})</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_style</span><span class="p">(</span><span class="s2">&quot;whitegrid&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_context</span><span class="p">(</span><span class="s2">&quot;talk&quot;</span><span class="p">)</span>
+
+<span class="c1"># add raw probabilities to data frame</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;theta_raw&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">y</span><span class="o">/</span><span class="n">df</span><span class="o">.</span><span class="n">n</span>
+
+<span class="c1"># count raw probabilities </span>
+<span class="n">theta_counts</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;theta_raw&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">theta_counts</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">theta_counts</span><span class="o">.</span><span class="n">size</span><span class="p">),</span> <span class="n">theta_counts</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+           <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Raw estimate $y_i/n_i$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Counts&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Distribution of raw tumour probabilities&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<figure align="middle">
+  <img src="https://fractalleaf.github.io/data analysis/images/raw_probability.png" title="Distribution of raw tumour probabilities" width=600>
+  <figcaption>Distribution of raw tumour probabilities</figcaption>
+</figure>
+
+<p>Plotting the raw probabilities, we see that the estimate for each experiment range between 0 and 0.375. Can these estimates be improved? Sure, for example it seems implausible that the true tumour probability is exactly 0 in 14 of the experiments. On the other hand, the variability between the individual estimates is large enough that it also seems improbable that the true tumour probability is the same in all 71&nbsp;experiments.</p>
+<h2>Bayes&nbsp;Theorem</h2>
+<p>The theoretical foundation behind the empirical Bayes method is Bayes Theorem, which looks like&nbsp;this</p>
+<div class="math">$$
+p(\theta \mid y, n) = \frac{p(\theta) \times p(y \mid \theta, n)}{p(y)}
+$$</div>
+<p><span class="math">\(p(y \mid \theta)\)</span> is the <em>likelihood</em> and is the probability of the data assuming the parameter, <span class="math">\(\theta\)</span> is known. For data that records a binary variable (like in this example) the <a href="https://en.wikipedia.org/wiki/Binomial_distribution">binomial distribution</a> is typically used as the&nbsp;likelihood</p>
+<div class="math">$$
+p(y \mid \theta, n) = \mathrm{Binomial}(n, \theta) = \binom{n}{y} \theta^y \, (1 - \theta)^{n - y}
+$$</div>
+<p>where <span class="math">\(n\)</span>, in this example, is the number of rats in the&nbsp;experiment.</p>
+<p><span class="math">\(p(\theta)\)</span> is the <em>prior</em> probability distribution. In cases with a binomial likelihood it is convenient to use a <a href="https://en.wikipedia.org/wiki/Beta_distribution">beta distribution</a> as&nbsp;prior</p>
+<div class="math">$$
+p(\theta) = \mathrm{Beta}(\alpha, \beta) = \frac{\theta^{\alpha-1} \, (1-\theta)^{\beta-1}}{B(\alpha, \beta)}
+$$</div>
+<p>where <span class="math">\(B(\alpha, \beta)\)</span> is the <a href="https://en.wikipedia.org/wiki/Beta_function">beta function</a>, and <span class="math">\(\alpha\)</span> and <span class="math">\(\beta\)</span> are the the two shape parameters of the distribution. Roughly speaking, the beta distribution can be interpreted as a distribution of the most likely probability, <span class="math">\(\theta\)</span>, for a binomial process with <span class="math">\(\alpha\)</span> successes and <span class="math">\(\beta\)</span> failures (I also strongly recommend <a href="http://varianceexplained.org/statistics/beta_distribution_and_baseball/">this post</a> from David Robinson&#8217;s blog on understanding the beta&nbsp;distribution).</p>
+<p>The beta distribution is convenient to use as prior in conjunction with a binomial likelihood because it ensures that the <em>posterior</em> probability distribution, <span class="math">\(p(\theta \mid y)\)</span> is also a beta distribution. For a beta prior and a binomial likelihood the posterior probability&nbsp;is</p>
+<div class="math">$$
+p(\theta \mid y, n) = \mathrm{Beta}(\alpha+y, n-y+\beta) = \frac{\theta^{y+\alpha-1} \, (1-\theta)^{n-y+\beta-1}}{B(y+\alpha, n-y+\beta)}
+$$</div>
+<h2>Empirical Bayes&nbsp;method</h2>
+<p>Conceptually, the empirical Bayes method can be split into two&nbsp;steps</p>
+<ol>
+<li>Estimate the prior probability distribution, <span class="math">\(p(\theta)\)</span>, from the&nbsp;data</li>
+<li>Use the estimated prior to infer the posterior probability distribution, <span class="math">\(p(\theta \mid&nbsp;y)\)</span></li>
+</ol>
+<h3>Estimating the prior probability, <span class="math">\(p(\theta)\)</span></h3>
+<p>For the example at hand, estimating the prior probability means finding the values of the parameters <span class="math">\(\alpha\)</span> and <span class="math">\(\beta\)</span> of the beta distribution that best matches our data. There are several ways of doing this but the most rigorous is to fit a <a href="https://en.wikipedia.org/wiki/Beta-binomial_distribution">beta-binomial distribution</a> to the data. The beta-binomial distribution is the binomial distribution in which the probability of success at each trial is fixed but randomly drawn from a beta distribution&nbsp;prior.</p>
+<p>The beta-binomial distribution is written&nbsp;as</p>
+<div class="math">$$
+p(\alpha, \beta \mid y, n) = \binom{n}{y} \frac{B(y+\alpha, n-y+\beta)}{B(\alpha, \beta)}
+$$</div>
+<p>and the optimal values of <span class="math">\(\alpha\)</span> and <span class="math">\(\beta\)</span> can be found&nbsp;as </p>
+<div class="math">$$
+\underset{\alpha,\beta}{\mathrm{arg\,max}}\prod_i p(\alpha, \beta \mid y_i, n_i)
+$$</div>
+<p>It is often convenient to work in log-space where the product becomes a sum to avoid float-precision issues. Also, most optimisation functions minimise instead of maximise, and so the problem can instead be formulated in terms of a <em>loss&nbsp;function</em></p>
+<div class="math">$$
+\mathcal{L}(\alpha, \beta) = \underset{\alpha,\beta}{\mathrm{arg\,min}}-\sum_i \log p(\alpha, \beta \mid y_i, n_i)
+$$</div>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">gammaln</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+
+<span class="k">def</span> <span class="nf">beta_function</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="n">log_beta</span> <span class="o">=</span> <span class="n">gammaln</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="n">gammaln</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span> <span class="o">-</span> <span class="n">gammaln</span><span class="p">(</span><span class="n">alpha</span><span class="o">+</span><span class="n">beta</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">log_beta</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_beta</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">beta_binomial_distribution</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="n">log_beta_binomial</span> <span class="o">=</span> <span class="n">gammaln</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">gammaln</span><span class="p">(</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">gammaln</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> \
+                        <span class="n">beta_function</span><span class="p">(</span><span class="n">k</span><span class="o">+</span><span class="n">alpha</span><span class="p">,</span> <span class="n">n</span><span class="o">-</span><span class="n">k</span><span class="o">+</span><span class="n">beta</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="o">-</span> \
+                        <span class="n">beta_function</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">log_beta_binomial</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_beta_binomial</span><span class="p">)</span>
+
+<span class="c1"># function to minimize</span>
+<span class="k">def</span> <span class="nf">loss_function</span><span class="p">(</span><span class="n">ab</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">ab</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">beta_binomial_distribution</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+
+<span class="n">min_result</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">loss_function</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> 
+                      <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">n</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> 
+                      <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Nelder-Mead&quot;</span><span class="p">)</span>
+<span class="n">alpha0</span><span class="p">,</span> <span class="n">beta0</span> <span class="o">=</span> <span class="n">min_result</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Estimated alpha parameter = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alpha0</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Estimated beta parameter  = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">beta0</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Estimated alpha parameter = 2.3416074415106394
+Estimated beta parameter  = 14.114759575657441
+</pre></div>
+
+
+<p>For the rat tumour data, the values of the <span class="math">\(\alpha\)</span> and <span class="math">\(\beta\)</span> parameters that minimises the loss function&nbsp;are</p>
+<div class="math">$$
+\begin{eqnarray}
+\alpha_0 &amp;=&amp; 2.34 \\
+\beta_0 &amp;=&amp; 14.1
+\end{eqnarray}
+$$</div>
+<p>The quantity <span class="math">\(\alpha_0/(\alpha_0+\beta_0) = 0.142\)</span> is the average probability of the prior distribution. The quantity <span class="math">\(\alpha_0+\beta_0 = 16.5\)</span> can be understood as the &#8220;sample size&#8221; of the prior distribution. The larger the sum of <span class="math">\(\alpha\)</span> and <span class="math">\(\beta\)</span> the narrower will the distribution&nbsp;become.</p>
+<p>Below, I plot the prior distribution <span class="math">\(p(\theta)\)</span> that corresponds to these parameters, along with the raw tumour probabilities from&nbsp;above</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">beta</span>
+
+<span class="n">prior</span> <span class="o">=</span> <span class="n">beta</span><span class="p">(</span><span class="n">alpha0</span><span class="p">,</span> <span class="n">beta0</span><span class="p">)</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">theta_counts</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">theta_counts</span><span class="o">.</span><span class="n">size</span><span class="p">),</span> <span class="mf">0.4</span><span class="o">*</span><span class="n">theta_counts</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+           <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Raw probabilities$\times 0.4$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">prior</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Prior probability&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Prior probability&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$p(\theta)$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Probability&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+
+
+<figure align="middle">
+  <img src="https://fractalleaf.github.io/data analysis/images/prior.png" title="Prior probability" width=600>
+  <figcaption>Prior probability</figcaption>
+</figure>
+
+<p>The prior distribution covers the entire range of the raw probabilities with the &#8220;meaty&#8221; part of the distribution centered around the highest concentration of raw probabilities, as we would expect for a distribution estimated from the&nbsp;data.</p>
+<h3>Inferring the posterior distribution, <span class="math">\(p(\theta \mid y,&nbsp;n)\)</span></h3>
+<p>Now that we have gotten an estimate of the prior distribution, inferring the posterior distribution for each experiment is incredibly&nbsp;simple</p>
+<div class="math">$$
+p(\theta_i \mid y_i, n_i) = \mathrm{Beta}(\alpha_0+y_i, n_i-y_i+\beta_i) = \frac{\theta_i^{y_i+\alpha_0-1} \, (1-\theta_i)^{n_i-y_i+\beta_0-1}}{B(y_i+\alpha_0, n_i-y_i+\beta_0)}
+$$</div>
+<p>Below I plot the posterior distribution for three of the experiments along with the prior&nbsp;distribution.</p>
+<div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+
+<span class="c1">#prior probability</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">prior</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Prior probability&quot;</span><span class="p">)</span>
+<span class="c1">#posterior probabilities</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">beta</span><span class="p">(</span><span class="n">alpha0</span><span class="o">+</span><span class="mi">0</span><span class="p">,</span> <span class="n">beta0</span><span class="o">+</span><span class="mi">20</span><span class="o">-</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$y=0$, $n=20$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">beta</span><span class="p">(</span><span class="n">alpha0</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span> <span class="n">beta0</span><span class="o">+</span><span class="mi">20</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;$y=4$, $n=20$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">beta</span><span class="p">(</span><span class="n">alpha0</span><span class="o">+</span><span class="mi">16</span><span class="p">,</span> <span class="n">beta0</span><span class="o">+</span><span class="mi">52</span><span class="o">-</span><span class="mi">16</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;$y=16$, $n=52$&quot;</span><span class="p">)</span>
+<span class="c1">#raw probabilities</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">arrow</span><span class="p">(</span><span class="mi">0</span><span class="o">/</span><span class="mi">20</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">head_width</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">head_length</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">arrow</span><span class="p">(</span><span class="mi">4</span><span class="o">/</span><span class="mi">20</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">head_width</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">head_length</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">arrow</span><span class="p">(</span><span class="mi">16</span><span class="o">/</span><span class="mi">52</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">head_width</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">head_length</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="s1">&#39;C2&#39;</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="s1">&#39;C2&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Posterior probabilities&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$p(\theta \mid y, n)$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Posterior probability&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+
+
+<figure align="middle">
+  <img src="https://fractalleaf.github.io/data analysis/images/posterior.png" title="Posterior probability" width=600>
+  <figcaption>Posterior probability</figcaption>
+</figure>
+
+<p>The three arrows show the raw probability estimate, <span class="math">\(y_i/n_i\)</span> for each of the three experiments. In each case, we see that the posterior distribution has been shifted away from the raw estimate and towards the average of the prior. How much the distribution will be shifted will depend on how close the raw estimate already was to the prior average -estimates close to the prior average will not be shifted as much - and the size of the sample for the experiment - larger samples will be shifted&nbsp;less.</p>
+<p>Below is plotted the raw estimates for all the experiments vs. the posterior means with 95% credible intervals. The dashed line shows the diagonal. The individual points have been jittered to reduce overlap. The posterior estimates are <em>shrunk</em> towards the prior&nbsp;mean.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">numpy.random</span> <span class="kn">import</span> <span class="n">uniform</span>
+
+<span class="n">posterior</span> <span class="o">=</span> <span class="n">beta</span><span class="p">(</span><span class="n">alpha0</span> <span class="o">+</span> <span class="n">df</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">beta0</span> <span class="o">+</span> <span class="n">df</span><span class="o">.</span><span class="n">n</span><span class="o">.</span><span class="n">values</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;theta_mean&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">posterior</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;theta_ci_min&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">posterior</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;theta_ci_max&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">posterior</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">0.95</span><span class="p">)</span>
+<span class="n">yerr</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">theta_mean</span><span class="o">.</span><span class="n">values</span><span class="o">-</span><span class="n">df</span><span class="o">.</span><span class="n">theta_ci_min</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">theta_ci_max</span><span class="o">.</span><span class="n">values</span><span class="o">-</span><span class="n">df</span><span class="o">.</span><span class="n">theta_mean</span><span class="o">.</span><span class="n">values</span><span class="p">]</span>
+
+<span class="n">dx</span> <span class="o">=</span> <span class="mf">0.02</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="o">-</span><span class="n">dx</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="n">dx</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">theta_raw</span><span class="o">.</span><span class="n">values</span><span class="o">+</span><span class="n">uniform</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">71</span><span class="p">)</span><span class="o">*</span><span class="n">dx</span><span class="o">-</span><span class="n">dx</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">theta_mean</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+             <span class="n">yerr</span><span class="o">=</span><span class="n">yerr</span><span class="p">,</span>
+             <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Posterior vs. raw estimate&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Posterior means with 95</span><span class="si">% c</span><span class="s2">redible intervals&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Raw estimate $y_i/n_i$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="o">-</span><span class="n">dx</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="n">dx</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">)</span>
+</pre></div>
+
+
+<figure align="middle">
+  <img src="https://fractalleaf.github.io/data analysis/images/raw_vs_posterior.png" title="Posterior vs. raw estimate" width=600>
+  <figcaption>Posterior vs. raw estimate</figcaption>
+</figure>
+
+<h2>Conclusion</h2>
+<p>The empirical Bayes method is very simple to implement and use, and can give you significantly improved estimates for problems where there is a lot of repeated structure (such as repeated experiments). One may interject that estimating the prior probability directly from the data is not the correct Bayesian way handling the problem. A more rigorous approach would be use a hierarchical Bayesian model, which I plan to explore in a later&nbsp;post.</p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="https://fractalleaf.github.io/tag/data-analysis.html">data analysis</a>
+      <a href="https://fractalleaf.github.io/tag/bayesian-inference.html">bayesian inference</a>
+      <a href="https://fractalleaf.github.io/tag/empirical-bayes.html">empirical bayes</a>
+      <a href="https://fractalleaf.github.io/tag/python.html">python</a>
+    </p>
+  </div>
+
+
+
+
+
+</article>
+
+    <footer>
+<p>
+  &copy;  2019 - This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>
+</p>
+<p>    Powered by <a href="http://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="http://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a>
+</p><p>
+  <a rel="license"
+     href="http://creativecommons.org/licenses/by-sa/4.0/"
+     target="_blank">
+    <img alt="Creative Commons License"
+         title="Creative Commons License"
+         style="border-width:0"
+           src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png"
+         width="80"
+         height="15"/>
+  </a>
+</p>    </footer>
+  </main>
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Digital Ramblings ",
+  "url" : "https://fractalleaf.github.io",
+  "image": "",
+  "description": ""
+}
+</script>
+
+</body>
+</html>
