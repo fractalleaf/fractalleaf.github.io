@@ -14,7 +14,7 @@ TYPOGRIFY = True
 
 # PATHS
 PATH = 'content' # path to content directory
-STATIC_PATHS = ['Algorithms/images', 'Puzzles/images', 'pdf']
+STATIC_PATHS = ['Algorithms/images', 'Puzzles/images', 'pdf', 'data analysis/images']
 
 # LANGUAGE AND TIMEZONE
 TIMEZONE = 'Europe/Paris'
@@ -51,7 +51,7 @@ CC_LICENSE = {
     'version': '4.0',
     'slug': 'by-sa'
 }
-COPYRIGHT_YEAR = 2018
+COPYRIGHT_YEAR = 2019
 
 # Uncomment following line if you want document-relative URLs when developing
 #RELATIVE_URLS = True
