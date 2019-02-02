@@ -81,15 +81,19 @@ $$&lt;/div&gt;
 &lt;p&gt;For the example at hand, estimating the prior probability means finding the values of the parameters &lt;span class="math"&gt;\(\alpha\)&lt;/span&gt; and &lt;span class="math"&gt;\(\beta\)&lt;/span&gt; of the beta distribution that best matches our data. There are several ways of doing this but the most rigorous is to fit a &lt;a href="https://en.wikipedia.org/wiki/Beta-binomial_distribution"&gt;beta-binomial distribution&lt;/a&gt; to the data. The beta-binomial distribution is the binomial distribution in which the probability of success at each trial is fixed but randomly drawn from a beta distribution&amp;nbsp;prior.&lt;/p&gt;
 &lt;p&gt;The beta-binomial distribution is written&amp;nbsp;as&lt;/p&gt;
 &lt;div class="math"&gt;$$
-p(\alpha, \beta \mid y, n) = \binom{n}{y} \frac{B(y+\alpha, n-y+\beta)}{B(\alpha, \beta)}
+p(y \mid n, \alpha, \beta) = \binom{n}{y} \frac{B(y+\alpha, n-y+\beta)}{B(\alpha, \beta)}
 $$&lt;/div&gt;
 &lt;p&gt;and the optimal values of &lt;span class="math"&gt;\(\alpha\)&lt;/span&gt; and &lt;span class="math"&gt;\(\beta\)&lt;/span&gt; can be found&amp;nbsp;as &lt;/p&gt;
 &lt;div class="math"&gt;$$
-\underset{\alpha,\beta}{\mathrm{arg\,max}}\prod_i p(\alpha, \beta \mid y_i, n_i)
+\underset{\alpha,\beta}{\mathrm{arg\,max}}\prod_i p(y_i \mid n_i, \alpha, \beta)
 $$&lt;/div&gt;
 &lt;p&gt;It is often convenient to work in log-space where the product becomes a sum to avoid float-precision issues. Also, most optimisation functions minimise instead of maximise, and so the problem can instead be formulated in terms of a &lt;em&gt;loss&amp;nbsp;function&lt;/em&gt;&lt;/p&gt;
 &lt;div class="math"&gt;$$
-\mathcal{L}(\alpha, \beta) = \underset{\alpha,\beta}{\mathrm{arg\,min}}-\sum_i \log p(\alpha, \beta \mid y_i, n_i)
+\mathcal{L}(\alpha, \beta) = -\sum_i \log p(y_i \mid n_i, \alpha, \beta)
+$$&lt;/div&gt;
+&lt;p&gt;and the minimisation is then written&amp;nbsp;as&lt;/p&gt;
+&lt;div class="math"&gt;$$
+\underset{\alpha,\beta}{\mathrm{arg\,min}} \, \mathcal{L}(\alpha, \beta)
 $$&lt;/div&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;scipy.special&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;gammaln&lt;/span&gt;
 &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;scipy.optimize&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;minimize&lt;/span&gt;

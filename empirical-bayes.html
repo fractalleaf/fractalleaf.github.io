@@ -189,15 +189,19 @@ $$</div>
 <p>For the example at hand, estimating the prior probability means finding the values of the parameters <span class="math">\(\alpha\)</span> and <span class="math">\(\beta\)</span> of the beta distribution that best matches our data. There are several ways of doing this but the most rigorous is to fit a <a href="https://en.wikipedia.org/wiki/Beta-binomial_distribution">beta-binomial distribution</a> to the data. The beta-binomial distribution is the binomial distribution in which the probability of success at each trial is fixed but randomly drawn from a beta distribution&nbsp;prior.</p>
 <p>The beta-binomial distribution is written&nbsp;as</p>
 <div class="math">$$
-p(\alpha, \beta \mid y, n) = \binom{n}{y} \frac{B(y+\alpha, n-y+\beta)}{B(\alpha, \beta)}
+p(y \mid n, \alpha, \beta) = \binom{n}{y} \frac{B(y+\alpha, n-y+\beta)}{B(\alpha, \beta)}
 $$</div>
 <p>and the optimal values of <span class="math">\(\alpha\)</span> and <span class="math">\(\beta\)</span> can be found&nbsp;as </p>
 <div class="math">$$
-\underset{\alpha,\beta}{\mathrm{arg\,max}}\prod_i p(\alpha, \beta \mid y_i, n_i)
+\underset{\alpha,\beta}{\mathrm{arg\,max}}\prod_i p(y_i \mid n_i, \alpha, \beta)
 $$</div>
 <p>It is often convenient to work in log-space where the product becomes a sum to avoid float-precision issues. Also, most optimisation functions minimise instead of maximise, and so the problem can instead be formulated in terms of a <em>loss&nbsp;function</em></p>
 <div class="math">$$
-\mathcal{L}(\alpha, \beta) = \underset{\alpha,\beta}{\mathrm{arg\,min}}-\sum_i \log p(\alpha, \beta \mid y_i, n_i)
+\mathcal{L}(\alpha, \beta) = -\sum_i \log p(y_i \mid n_i, \alpha, \beta)
+$$</div>
+<p>and the minimisation is then written&nbsp;as</p>
+<div class="math">$$
+\underset{\alpha,\beta}{\mathrm{arg\,min}} \, \mathcal{L}(\alpha, \beta)
 $$</div>
 <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">gammaln</span>
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
