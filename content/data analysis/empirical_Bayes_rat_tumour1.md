@@ -114,19 +114,25 @@ For the example at hand, estimating the prior probability means finding the valu
 The beta-binomial distribution is written as
 
 $$
-p(\alpha, \beta \mid y, n) = \binom{n}{y} \frac{B(y+\alpha, n-y+\beta)}{B(\alpha, \beta)}
+p(y \mid n, \alpha, \beta) = \binom{n}{y} \frac{B(y+\alpha, n-y+\beta)}{B(\alpha, \beta)}
 $$
 
 and the optimal values of $\alpha$ and $\beta$ can be found as 
 
 $$
-\underset{\alpha,\beta}{\mathrm{arg\,max}}\prod_i p(\alpha, \beta \mid y_i, n_i)
+\underset{\alpha,\beta}{\mathrm{arg\,max}}\prod_i p(y_i \mid n_i, \alpha, \beta)
 $$
 
 It is often convenient to work in log-space where the product becomes a sum to avoid float-precision issues. Also, most optimisation functions minimise instead of maximise, and so the problem can instead be formulated in terms of a *loss function*
 
 $$
-\mathcal{L}(\alpha, \beta) = \underset{\alpha,\beta}{\mathrm{arg\,min}}-\sum_i \log p(\alpha, \beta \mid y_i, n_i)
+\mathcal{L}(\alpha, \beta) = -\sum_i \log p(y_i \mid n_i, \alpha, \beta)
+$$
+
+and the minimisation is then written as
+
+$$
+\underset{\alpha,\beta}{\mathrm{arg\,min}} \, \mathcal{L}(\alpha, \beta)
 $$
 
 ```python
