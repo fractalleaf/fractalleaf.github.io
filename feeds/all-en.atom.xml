@@ -1,5 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Digital Ramblings</title><link href="https://fractalleaf.github.io/" rel="alternate"></link><link href="https://fractalleaf.github.io/feeds/all-en.atom.xml" rel="self"></link><id>https://fractalleaf.github.io/</id><updated>2019-01-13T15:40:00+01:00</updated><subtitle>Post Hoc, Ergo Propter Hoc</subtitle><entry><title>Introduction to empirical Bayes (with rat tumour example)</title><link href="https://fractalleaf.github.io/empirical-bayes.html" rel="alternate"></link><published>2019-01-13T15:40:00+01:00</published><updated>2019-01-13T15:40:00+01:00</updated><author><name>Søren</name></author><id>tag:fractalleaf.github.io,2019-01-13:/empirical-bayes.html</id><summary type="html">&lt;p&gt;In this post, I will introduce the empirical Bayes method. The method is useful when working with problems where you have to estimate a lot of similar quantities. For example, say you wanted to find the best baseball player of all time. One simple (too simple, but this is just for illustration) approach would be to rank the players by their batting average. However, doing so would likely reveal that the players with the highest batting average are those who only got one or two plate appearances in their career and were lucky to get hits. The empirical Bayes method makes it possible to get more realistic estimates of the batting average by incorporating the evidence of all other recorded at&amp;nbsp;bats.&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://github.com/fractalleaf/Bayesian-data-analysis/blob/master/empirical_Bayes_rat_tumour1.ipynb"&gt;Link to GitHub&amp;nbsp;repository&lt;/a&gt;&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Digital Ramblings</title><link href="https://fractalleaf.github.io/" rel="alternate"></link><link href="https://fractalleaf.github.io/feeds/all-en.atom.xml" rel="self"></link><id>https://fractalleaf.github.io/</id><updated>2019-03-15T20:00:00+01:00</updated><subtitle>Post Hoc, Ergo Propter Hoc</subtitle><entry><title>Project Euler problem 6 - Sum square difference</title><link href="https://fractalleaf.github.io/project-euler-problem-6.html" rel="alternate"></link><published>2019-03-15T20:00:00+01:00</published><updated>2019-03-15T20:00:00+01:00</updated><author><name>Søren</name></author><id>tag:fractalleaf.github.io,2019-03-15:/project-euler-problem-6.html</id><summary type="html">&lt;p&gt;Solution to the sixth Project Euler problem. Finding the difference between the sum of the squares and the square of the sum of the first 100 natural&amp;nbsp;numbers&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://projecteuler.net/problem=6"&gt;Link to problem on Project Euler&amp;nbsp;homepage&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/fractalleaf/project-euler/tree/master/p006"&gt;Link to Github&amp;nbsp;repository&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;Description&lt;/h2&gt;
+&lt;p&gt;The sum of the squares of the first ten natural numbers&amp;nbsp;is,&lt;/p&gt;
+&lt;div class="math"&gt;$$1^2 + 2^2 + \ldots + 10^2 = 385$$&lt;/div&gt;
+&lt;p&gt;The square of the sum of the first ten natural numbers&amp;nbsp;is,&lt;/p&gt;
+&lt;div class="math"&gt;$$(1 + 2 + \ldots + 10)^2 = 55^2 = 3025$$&lt;/div&gt;
+&lt;p&gt;Hence the difference between the sum of the squares of the first ten natural numbers and the square of the sum is &lt;span class="math"&gt;\(3025 − 385 = 2640\)&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt;Find the difference between the sum of the squares of the first one hundred natural numbers and the square of the&amp;nbsp;sum.&lt;/p&gt;
+&lt;h2&gt;Brute&amp;nbsp;force&lt;/h2&gt;
+&lt;p&gt;In the simplest brute force solution to the problem one simply iterates over all integers up to the limit, calculating the sum of singles and&amp;nbsp;squares. &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;p006&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;square_sum&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;single_sum&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;k&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;single_sum&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="n"&gt;k&lt;/span&gt;
+        &lt;span class="n"&gt;square_sum&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="n"&gt;k&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;single_sum&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;square_sum&lt;/span&gt;
+
+&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;LIMIT&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;limit = {}&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;LIMIT&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Sum square difference: {}&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;p006&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;LIMIT&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;
+    &lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;timeit&lt;/span&gt; &lt;span class="n"&gt;p006&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;LIMIT&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;limit = 10
+Sum square difference: 2640
+3.31 µs ± 24.7 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+
+limit = 100
+Sum square difference: 25164150
+30.7 µs ± 562 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Optimisation&lt;/h2&gt;
+&lt;p&gt;The brute force approach can be improved upon by using the fact that both the &lt;a href="https://en.wikipedia.org/wiki/Triangular_number"&gt;sum&lt;/a&gt; and the &lt;a href="https://en.wikipedia.org/wiki/Square_pyramidal_number"&gt;sum of squares&lt;/a&gt; of the first &lt;span class="math"&gt;\(n\)&lt;/span&gt; natural numbers have closed form solutions given&amp;nbsp;as&lt;/p&gt;
+&lt;div class="math"&gt;$$
+\begin{eqnarray}
+\sum_{k=1}^n k   &amp;amp;=&amp;amp; \frac{n(n+1)}{2} \\
+\sum_{k=1}^n k^2 &amp;amp;=&amp;amp; \frac{n(n+1)(2n + 1)}{6}. \\
+\end{eqnarray}
+$$&lt;/div&gt;
+&lt;p&gt;The difference can then be written&amp;nbsp;as&lt;/p&gt;
+&lt;div class="math"&gt;$$\left( \sum_{k=1}^n k \right)^2 - \sum_{k=1}^n k^2 = \frac{n^4}{4} + \frac{n^3}{6} - \frac{n^2}{4} - \frac{n}{6}$$&lt;/div&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;p006&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;LIMIT&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;limit = {}&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;LIMIT&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Sum square difference: {}&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;p006&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;LIMIT&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;
+    &lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;timeit&lt;/span&gt; &lt;span class="n"&gt;p006&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;LIMIT&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;limit = 10
+Sum square difference: 2640
+990 ns ± 3.75 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
+
+limit = 100
+Sum square difference: 25164150
+1.08 µs ± 31.5 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;For the 100 limit the runtime is improved by a factor&amp;nbsp;30.&lt;/p&gt;
+&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width &lt; 768) ? "left" : align;
+        indent = (screen.width &lt; 768) ? "0em" : indent;
+        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+&lt;/script&gt;</content><category term="project euler"></category><category term="python"></category></entry><entry><title>Introduction to empirical Bayes (with rat tumour example)</title><link href="https://fractalleaf.github.io/empirical-bayes.html" rel="alternate"></link><published>2019-01-13T15:40:00+01:00</published><updated>2019-01-13T15:40:00+01:00</updated><author><name>Søren</name></author><id>tag:fractalleaf.github.io,2019-01-13:/empirical-bayes.html</id><summary type="html">&lt;p&gt;In this post, I will introduce the empirical Bayes method. The method is useful when working with problems where you have to estimate a lot of similar quantities. For example, say you wanted to find the best baseball player of all time. One simple (too simple, but this is just for illustration) approach would be to rank the players by their batting average. However, doing so would likely reveal that the players with the highest batting average are those who only got one or two plate appearances in their career and were lucky to get hits. The empirical Bayes method makes it possible to get more realistic estimates of the batting average by incorporating the evidence of all other recorded at&amp;nbsp;bats.&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://github.com/fractalleaf/Bayesian-data-analysis/blob/master/empirical_Bayes_rat_tumour1.ipynb"&gt;Link to GitHub&amp;nbsp;repository&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;In this post, I will introduce the empirical Bayes method. The method is useful when working with problems where you have to estimate a lot of similar quantities. For example, say you wanted to find the best baseball player of all time. One simple (too simple, but this is just for illustration) approach would be to rank the players by their batting average. However, doing so would likely reveal that the players with the highest batting average are those who only got one or two plate appearances in their career and were lucky to get hits. The empirical Bayes method makes it possible to get more realistic estimates of the batting average by incorporating the evidence of all other recorded at&amp;nbsp;bats.&lt;/p&gt;
 &lt;p&gt;On his blog, &lt;a href="http://varianceexplained.org"&gt;varianceexplained.org&lt;/a&gt;, David Robinson has an excellent &lt;a href="http://varianceexplained.org/r/simulation-bayes-baseball/"&gt;series of posts&lt;/a&gt; where he explores the empirical Bayes method using Baseball statistics. In this post, I will also explore the empirical Bayes method, but using the rat tumour data from Chapter 5 of &lt;a href="http://www.stat.columbia.edu/~gelman/book/"&gt;Bayesian Data Analysis&lt;/a&gt; by Gelman et&amp;nbsp;al.&lt;/p&gt;
 &lt;h2&gt;Data&lt;/h2&gt;
